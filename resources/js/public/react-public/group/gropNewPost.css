@@ -1,0 +1,18 @@
+.file-pond-group.filepond--credits{
+    display: none;
+}
+.file-pond-group .filepond--credits{
+    display: none;
+}
+.file-pond-group .filepond--action-remove-item{
+    display: none;
+}
+.file-pond-group .filepond--action-revert-item-processing{
+    display: none;
+}
+.file-pond-group .filepond--list-scroller{
+    display: none;
+}
+.group{
+    height: 100% !important;
+}

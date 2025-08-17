@@ -1,0 +1,30 @@
+<svg width="36" height="35" viewBox="0 0 36 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icons8_Google_Play_Store 1">
+<path id="Vector" d="M10.335 2.92561C8.37063 1.82894 6.04531 2.75499 5.20312 4.61072L18.0919 17.5002L24.6646 10.9275L10.335 2.92561Z" fill="url(#paint0_linear_272_2208)"/>
+<path id="Vector_2" d="M24.6646 24.0727L18.0919 17.5L5.20312 30.3895C6.04604 32.2459 8.37135 33.1712 10.335 32.0753L24.6646 24.0727Z" fill="url(#paint1_linear_272_2208)"/>
+<path id="Vector_3" d="M30.7013 20.7032C31.9554 20.0032 32.5825 18.7519 32.5833 17.5C32.5825 16.248 31.9554 14.996 30.7013 14.2967L24.6645 10.9272L18.0918 17.5L24.6645 24.0727L30.7013 20.7032Z" fill="url(#paint2_linear_272_2208)"/>
+<path id="Vector_4" d="M5.20312 4.61035C4.9975 5.06608 4.875 5.57941 4.875 6.13066V28.8654C4.875 29.4202 4.99458 29.9321 5.20312 30.3893L18.0904 17.4976L5.20312 4.61035Z" fill="url(#paint3_linear_272_2208)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_272_2208" x1="13.6994" y1="2.36561" x2="18.9457" y2="25.3314" gradientUnits="userSpaceOnUse">
+<stop stop-color="#35AB4A"/>
+<stop offset="0.297" stop-color="#31A145"/>
+<stop offset="0.798" stop-color="#288739"/>
+<stop offset="1" stop-color="#237A33"/>
+</linearGradient>
+<linearGradient id="paint1_linear_272_2208" x1="14.4694" y1="17.3994" x2="15.954" y2="48.8039" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F14E5D"/>
+<stop offset="0.499" stop-color="#EA3D4F"/>
+<stop offset="1" stop-color="#E12138"/>
+</linearGradient>
+<linearGradient id="paint2_linear_272_2208" x1="24.5209" y1="10.8638" x2="27.1444" y2="31.8004" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFD844"/>
+<stop offset="0.519" stop-color="#FFC63F"/>
+<stop offset="1" stop-color="#FFB03A"/>
+</linearGradient>
+<linearGradient id="paint3_linear_272_2208" x1="10.6011" y1="4.30264" x2="11.8546" y2="31.2162" gradientUnits="userSpaceOnUse">
+<stop offset="0.003" stop-color="#0090E6"/>
+<stop offset="1" stop-color="#0065A0"/>
+</linearGradient>
+</defs>
+</svg>

@@ -1,0 +1,29 @@
+.file-pond-group .filepond--credits{
+    display: none;
+}
+.file-pond-group .filepond--action-remove-item{
+    display: none;
+}
+.file-pond-group .filepond--action-revert-item-processing{
+    display: none;
+}
+.file-pond-group .filepond--list-scroller{
+    display: none;
+}
+
+.file-pond-new .filepond--credits{
+    display: none;
+}
+.file-pond-new .filepond--action-remove-item{
+    display: none;
+}
+.file-pond-new .filepond--action-revert-item-processing{
+    display: none;
+}
+.file-pond-new .filepond--list-scroller{
+    display: none;
+}
+.filepond--root{
+    height: 40%;
+}
+

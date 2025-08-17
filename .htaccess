@@ -1,0 +1,36 @@
+# RewriteOptions inherit
+# RewriteEngine on
+# RewriteCond %{REQUEST_URI} !^public
+# RewriteRule ^(.*)$ public/$1 [L]
+#RewriteCond %{HTTP_HOST} ^.*$
+#RewriteRule ^/?$ "https\:\/\/landatrip\.com\/" [R=301,L]
+
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect to HTTPS (اختیاری)
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    RewriteCond %{REQUEST_URI} !^public
+    RewriteRule ^(.*)$ public/$1 [L]
+    
+    # Allow access to storage symlink
+    RewriteCond %{REQUEST_URI} ^/storage/
+    RewriteRule ^storage/(.*)$ public/storage/$1 [L]
+    
+    # اگر دامنه برابر با landatrip.ca باشد، ریدایرکت کن به landatrip.com
+    # RewriteCond %{HTTP_HOST} ^(www\.)?landatrip\.ca$ [NC]
+    # RewriteRule ^(.*)$ https://landatrip.com/$1 [R=301,L]
+
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+    
+</IfModule>
+
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php81 .php .php8 .phtml
+</IfModule>

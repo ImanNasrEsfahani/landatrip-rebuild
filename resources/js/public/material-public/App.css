@@ -1,0 +1,40 @@
+.scrollbarInputs {
+    overflow-y: auto;
+}
+.scrollbarInputs::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: #F1F2F2;
+}
+
+.scrollbarInputs::-webkit-scrollbar {
+    width: 12px; 
+    height: 12px;
+}
+
+.scrollbarInputs::-webkit-scrollbar-thumb {
+    border: 1px solid transparent;
+    background-clip: content-box;
+    border-radius: 10px;
+    background-color: #C8CCCB;
+}
+
+
+.Typography-container {
+    position: relative;
+}
+
+.Typography-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(150deg, transparent 48%, red 48%, red 50%, transparent 52%);
+    pointer-events: none;
+}
+
+.slide-animation {
+    display: flex;
+    transition: 0.5s ease-in-out all;
+  }

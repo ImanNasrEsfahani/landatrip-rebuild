@@ -1,0 +1,96 @@
+#content {
+    width: calc(100% - 260px);
+    height: 100%;
+    position: relative;
+    float: right;
+    transition: all 0.3s;
+    background-color: #EEEEEE;
+}
+
+.main-content {
+    background-color: #EEEEEE;
+}
+#content.active {
+    width: calc(100% - var(--side-bar-width-mini)) !important;
+    transition: 0.6s ease;
+}
+@media (min-width: 768px) {
+    #content {
+        width: calc(100% - var(--side-bar-width-expanded)) !important;
+        transition: 0.9s ease;
+    }
+
+}
+@media (max-width: 575.98px){
+    .main-content {
+        padding: 15px !important;
+    }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+    #sidebar {
+        width: var(--side-bar-width-mini);
+        height: 100% !important;
+        position: absolute !important;
+        overflow: visible !important;
+        top: 0 !important;
+        z-index: 666;
+        float: left !important;
+        bottom: 0 !important;
+    }
+    #sidebar .text {
+        display: none;
+    }
+    #sidebar .sidebar-header {
+        padding: 0px;
+    }
+
+    #content {
+        width: calc(100% - var(--side-bar-width-mini)) !important;
+        transition: 0.6s ease;
+    }
+
+    #sidebar i {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        transition: 1s ease;
+    }
+    .menu-item {
+        text-align: center;
+    }
+
+    #sidebar .accordion-button.collapsed::after {
+        display: none;
+
+    }
+
+    #sidebar-header .menu-bottun {
+        flex-direction: column-reverse !important;
+    }
+
+
+    #sidebar-header .menu-bottun button{
+        margin-top: 4rem;
+    }
+
+    #sidebar-header #radial-bar-chart {
+        display: none;
+    }
+
+    .menu-item:hover {
+        background-color: rgba($color:#fff, $alpha: 0.5) !important;
+        border-radius: 12.9px;
+    }
+
+    #sidebar .accordion-body {
+        position: absolute;
+        left: calc(var(--side-bar-width-mini) + 2px);
+        background-color: var(--bs-dark-gray);
+        //top: 6rem;
+        width: 15rem;
+        height: auto;
+        border-radius: 12.9px;
+        margin: 1px 5px;
+        z-index: 100;
+    }
+ }

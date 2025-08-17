@@ -1,0 +1,107 @@
+#content {
+    width: calc(100% - var(--side-bar-width-expanded));
+    height: 100%;
+    position: relative;
+    float: right;
+    transition: all 0.3s;
+    background-color: #EEEEEE;
+}
+
+.main-content {
+    background-color: #EEEEEE;
+}
+#content.active {
+    width: calc(100% - var(--side-bar-width-mini)) !important;
+    transition: 0.6s ease;
+}
+@media (min-width: 768px) {
+    #content {
+        width: calc(100% - var(--side-bar-width-expanded)) !important;
+        transition: 0.9s ease;
+    }
+
+}
+@media (max-width: 575.98px){
+    .main-content {
+        padding: 15px !important;
+    }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+    #sidebar {
+        width: var(--side-bar-width-mini);
+        height: 100% !important;
+        position: absolute !important;
+        overflow: visible !important;
+        top: 0 !important;
+        z-index: 666;
+        float: left !important;
+        bottom: 0 !important;
+    }
+    #sidebar .text {
+        display: none;
+    }
+    #sidebar .sidebar-header {
+        padding: 0px;
+    }
+
+    #sidebar i {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        transition: 1s ease;
+    }
+
+    #content {
+        width: calc(100% - var(--side-bar-width-mini)) !important;
+        transition: 0.6s ease;
+    }
+
+    #sidebar .fa-light {
+        font-size: 1.4rem !important;
+        margin-left: auto;
+        text-align: center;
+        margin-right: auto !important;
+        transition: 1s ease;
+    }
+    .menu-item {
+        text-align: center;
+        transition: 1s ease;
+    }
+
+    #sidebar .accordion-button.collapsed::after {
+        display: none;
+
+    }
+
+    #sidebar-header .menu-bottun {
+        flex-direction: column-reverse !important;
+        margin-top: 10px;
+    }
+
+
+    #sidebar-header .menu-bottun button{
+        margin-top: 4rem;
+    }
+
+    #sidebar-header .profile {
+        display: none !important;
+    }
+
+    .menu-item:hover {
+        background-color: rgba($color:#fff, $alpha: 0.5) !important;
+        border-radius: 12.9px;
+    }
+
+    #sidebar .accordion-body {
+        position: absolute;
+        left: 113px;
+        background-color: #d6d6d6;
+        top: 6rem;
+        width: 208px;
+        height: auto;
+        border-radius: 12.9px;
+        margin: 1px 5px;
+        border: 1px solid #dcd9d9;
+        z-index: 4;
+    }
+}

@@ -1,0 +1,228 @@
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 400;
+    src: url('./Roboto/Roboto-Regular.eot');
+    src: url('./Roboto/Roboto-Regular.eot?#iefix') format('embedded-opentype'),
+    url('./Roboto/Roboto-Regular.otf') format('otf'),
+    url('./Roboto/Roboto-Regular.svg#Roboto-Regular') format('svg'),
+    url('./Roboto/Roboto-Regular.ttf') format('truetype'),
+    url('./Roboto/Roboto-Regular.woff') format('woff'),
+    url('./Roboto/Roboto-Regular.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 500;
+    src: url('./Roboto/Roboto-Medium.eot');
+    src: url('./Roboto/Roboto-Medium.eot?#iefix') format('embedded-opentype'),
+    url('./Roboto/Roboto-Medium.otf') format('otf'),
+    url('./Roboto/Roboto-Medium.svg#Roboto-Medium') format('svg'),
+    url('./Roboto/Roboto-Medium.ttf') format('truetype'),
+    url('./Roboto/Roboto-Medium.woff') format('woff'),
+    url('./Roboto/Roboto-Medium.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Roboto-Bold';
+    font-weight: 700;
+    src: url('./Roboto/Roboto-Bold.eot');
+    src: url('./Roboto/Roboto-Bold.eot?#iefix') format('embedded-opentype'),
+    url('./Roboto/Roboto-Bold.otf') format('otf'),
+    url('./Roboto/Roboto-Bold.svg#Roboto-Bold') format('svg'),
+    url('./Roboto/Roboto-Bold.ttf') format('truetype'),
+    url('./Roboto/Roboto-Bold.woff') format('woff'),
+    url('./Roboto/Roboto-Bold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'RobotoSlab-Bold';
+    src: url('./RobotoSlab/RobotoSlab-Bold.eot');
+    src: url('./RobotoSlab/RobotoSlab-Bold.eot?#iefix') format('embedded-opentype'),
+    url('./RobotoSlab/RobotoSlab-Bold.otf') format('otf'),
+    url('./RobotoSlab/RobotoSlab-Bold.svg#RobotoSlab-Bold') format('svg'),
+    url('./RobotoSlab/RobotoSlab-Bold.ttf') format('truetype'),
+    url('./RobotoSlab/RobotoSlab-Bold.woff') format('woff'),
+    url('./RobotoSlab/RobotoSlab-Bold.woff2') format('woff2');
+}
+
+/*=============================================================== */
+/* Start IranYekan and Roboto Web Fonts */
+/*=============================================================== */
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: 200;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebThin.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebThin.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebThin.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebThin.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebThin.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/iranyekanwebthin.svg') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebLight.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebLight.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebLight.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebLight.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebLight.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/iranyekanweblight.svg') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: normal;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebRegular.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebRegular.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebRegular.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebRegular.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebRegular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/IRANYekanWebRegular.svg') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebMedium.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebMedium.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebMedium.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebMedium.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebMedium.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/iranyekanwebmedium.svg') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: bold;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebBold.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebBold.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebBold.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebBold.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebBold.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/iranyekanwebbold.svg') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebExtraBold.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebExtraBold.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebExtraBold.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebExtraBold.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebExtraBold.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/iranyekanwebextrabold.svg') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebBlack.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebBlack.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebBlack.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebBlack.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebBlack.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/iranyekanwebblack.svg') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: IRANYekan;
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('./IranYekan/eot/IRANYekanWebExtraBlack.eot'); /* IE9 Compat Modes */
+    src: url('./IranYekan/eot/IRANYekanWebExtraBlack.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('./IranYekan/woff2/IRANYekanWebExtraBlack.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('./IranYekan/woff/IRANYekanWebExtraBlack.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('./IranYekan/ttf/IRANYekanWebExtraBlack.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('./IranYekan/svg/iranyekanwebextrablack.svg') format('svg'); /* Legacy iOS */
+}
+
+
+/*=============================================================== */
+/* Start Baloo and Roboto Web Fonts */
+/*=============================================================== */
+
+// @font-face {
+//     font-family: 'Quicksand-Regular';
+//     src: url(./quicksand/eot/Quicksand-Regular.eot);
+//     src: url(./quicksand/eot/Quicksand-Regular.eot?#iefix) format('embedded-opentype'),
+//          url(./quicksand/otf/Quicksand-Regular.otf) format('otf'),
+//          url(./quicksand/svg/Quicksand-Regular.svg) format('svg'),
+//          url(./quicksand/woff/Quicksand-Regular.woff) format('woff'),
+//          url(./quicksand/woff2/Quicksand-Regular.woff2) format('woff2');
+// }
+
+// @font-face {
+//     font-family: 'Quicksand-SemiBold';
+//     src: url(./quicksand/eot/Quicksand-SemiBold.eot);
+//     src: url(./quicksand/eot/Quicksand-SemiBold.eot?#iefix) format('embedded-opentype'),
+//          url(./quicksand/otf/Quicksand-SemiBold.otf) format('otf'),
+//          url(./quicksand/svg/Quicksand-SemiBold.svg) format('svg'),
+//          url(./quicksand/woff/Quicksand-SemiBold.woff) format('woff'),
+//          url(./quicksand/woff2/Quicksand-SemiBold.woff2) format('woff2');
+//   }
+  
+
+// @font-face {
+//     font-family: 'Quicksand-Bold';
+//     src: url(./quicksand/eot/Quicksand-Bold.eot);
+//     src: url(./quicksand/eot/Quicksand-Bold.eot?#iefix) format('embedded-opentype'),
+//          url(./quicksand/otf/Quicksand-Bold.otf) format('otf'),
+//          url(./quicksand/woff/Quicksand-Bold.woff) format('woff'),
+//          url(./quicksand/woff2/Quicksand-Bold.woff2) format('woff2'),
+//          url(./quicksand/svg/Quicksand-Bold.svg) format('svg');
+// }
+
+// @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
+
+@font-face {
+    font-family: 'Quicksand-VariableFont_wght';
+    src: url(./quicksand/eot/Quicksand-VariableFont_wght.eot);
+    src: url(./quicksand/eot/Quicksand-VariableFont_wght.eot?#iefix) format('embedded-opentype'),
+         url(./quicksand/otf/Quicksand-VariableFont_wght.otf) format('otf'),
+         url(./quicksand/svg/Quicksand-VariableFont_wght.svg) format('svg'),
+         url(./quicksand/ttf/Quicksand-VariableFont_wght.ttf) format('truetype'),
+         url(./quicksand/woff/Quicksand-VariableFont_wght.woff) format('woff'),
+         url(./quicksand/woff2/Quicksand-VariableFont_wght.woff2) format('woff2');
+}
+  
+  
+
+/*=============================================================== */
+/* Start Baloo and Roboto Web Fonts */
+/*=============================================================== */
+// @font-face {
+//     font-family: Baloo;
+//     font-style: normal;
+//     font-weight: 800;
+//     font-display: swap;
+//     url('./Baloo/ttf/Baloo2-Regular.ttf') format('ttf') /* FF39+,Chrome36+, Opera24+*/
+// }
+
+$font-family-sans-serif: Roboto, IRANYekan, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", serif;
+
+
+.IRANYekan-font-family {
+    font-family: IRANYekan, Tahoma, sans-serif;
+}
+
+.RobotoSlab-font-family {
+    font-family: "RobotoSlab-Bold", Roboto, IRANYekan, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", serif;
+}
