@@ -20,7 +20,7 @@
                         Rasoul moradimehr
                     </h2>
                     <h3 class="text-mediumGray pt-1.5 text-body2">
-                        Co-Founder
+                        Co-Founder & CEO
                     </h3>
                 </div>
             </div>
@@ -33,20 +33,7 @@
                         Iman Nasr Esfahani
                     </h2>
                     <h3 class="text-mediumGray pt-1.5 text-body2">
-                        Founder
-                    </h3>
-                </div>
-            </div>
-        </div>
-        <div class="card   h-full">
-            <img class="w-full rounded-t-xl" src="{{ Storage::url('/website/about-us/leaderships/hadi-hasanpour.png') }}" alt="">
-            <div class="flex items-end justify-center h-full ">
-                <div class="w-full bg-footer rounded-b-xl p-5 ps-6 h-full">
-                    <h2 class="text-white ">
-                        Hadi hasanpoor
-                    </h2>
-                    <h3 class="text-mediumGray pt-1.5 text-body2">
-                        Co-Founder
+                        Co-Founder & CTO
                     </h3>
                 </div>
             </div>
@@ -86,7 +73,7 @@
                         Shirin Rahmani
                     </p>
                     <h3 class="text-mediumGray pt-1.5 text-body2">
-                        Financial Manger & Accountant
+                        Financial Manger & Accountant - CFO
                     </h3>
                 </div>
             </div>

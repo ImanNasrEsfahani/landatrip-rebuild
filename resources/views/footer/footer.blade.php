@@ -38,7 +38,7 @@
                                 <div>
                                     <dt class="leading-5">Toronto, Canada</dt>
                                     <dd class="text-sm md:text-[11.5px] pl-2">
-                                        North York
+                                        26 Norton Ave, Suite 1710, North York
                                     </dd>
                                     <dt class="leading-5">British Columbia, Canada</dt>
                                     <dd class="text-sm md:text-[11.5px] pl-2">
