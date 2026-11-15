@@ -51,6 +51,10 @@ class NewsletterEventTest extends TestCase
 
     public function test_mail()
     {
+        Mail::fake();
+
+        NewsletterFormSubmit::dispatch(Newsletter::factory()->makeOne());
+
         Mail::assertSent(NewsletterMail::class);
     }
 }
