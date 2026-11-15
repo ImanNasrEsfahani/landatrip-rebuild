@@ -48,6 +48,8 @@ Every checkpoint must preserve all routes and the mobile REST API v1, Sanctum to
 - Audit custom password token repositories, manually constructed database grammar/blueprint objects, filesystem assumptions, and SVG image validation.
 - Repeat the complete verification gate and commit only when it passes.
 
+Status: verified on Laravel `v12.72.0`. The route inventory is unchanged from the Laravel 11 checkpoint, all 98 migrations pass on a fresh SQLite database, and the full 20-test suite passes.
+
 ## Phase C: Laravel 12 to 13
 
 - Require Laravel `^13.0`, Tinker `^3.0`, and PHPUnit `^12.0`.

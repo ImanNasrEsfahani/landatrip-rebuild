@@ -44,3 +44,9 @@ Last updated: 2026-11-15
 
 **Reason:** Publishing the stock migration would create a duplicate table and discard application-specific schema. The existing migration ran successfully with Sanctum 4 on isolated SQLite.
 
+## D-008 — Upgrade Scout with the Laravel 12 checkpoint
+
+**Decision:** Upgrade `laravel/scout` to 11.x and `matchish/laravel-scout-elasticsearch` to 7.14.x during Phase B.
+
+**Reason:** Matchish 7.14 is the release line compatible with Laravel 12 and requires Scout 11. The resolved pair boots, preserves all registered search-related routes, and passes the full application suite.
+
