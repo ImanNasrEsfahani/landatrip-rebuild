@@ -4,7 +4,7 @@ Last updated: 2026-11-15
 
 ## Current checkpoint
 
-Phase B (Laravel 12) — verified and ready for its checkpoint commit. Phase A is committed as `fb9c9e45`.
+Phase C (Laravel 13) — verified and committed as the `Upgrade application to Laravel 13` checkpoint. Phase A is committed as `fb9c9e45`; Phase B is committed as `6801dd68`.
 
 ## Verified current state
 
@@ -12,16 +12,16 @@ Phase B (Laravel 12) — verified and ready for its checkpoint commit. Phase A i
 | --- | --- |
 | Git branch / start commit | `work` / `a39bb498` |
 | Start working tree | Clean |
-| Laravel | `v12.72.0` from current `composer.lock` |
+| Laravel | `v13.42.0` from current `composer.lock` |
 | Sanctum | `v4.4.0` |
 | Fortify | `v1.42.0` |
 | Scout | `v11.10.0` |
 | Initial PHP runtime | `8.2.35` through `/workspace/.cloud-setup/php` |
 | Initial Composer | `2.5.5` |
 | Dependency cache | `/workspace/.cloud-setup/composer-cache` present and reused |
-| Current lock consistency | Passes `composer validate` after Phase B resolution |
+| Current lock consistency | Passes `composer validate` after Phase C resolution; Composer reports no known advisories |
 | Database target | SQLite `/workspace/.cloud-setup/development.sqlite` |
-| Existing `vendor` | Present; Laravel 10 dependencies only |
+| Installed `vendor` | Present and synchronized with the Laravel 13 lock |
 | Reference artifacts | `old_vendor` and `old_composer.lock`; not trusted for upgrades |
 
 ## Completed work
@@ -49,6 +49,38 @@ Phase B (Laravel 12) — verified and ready for its checkpoint commit. Phase A i
 - Ran all 98 migrations successfully against `/workspace/.cloud-setup/laravel12.sqlite`.
 - Passed the Laravel 12 smoke set (6 tests, 6 assertions), Sanctum/mobile API regression set (2 tests, 8 assertions), and complete suite (20 tests, 26 assertions) on isolated database copies.
 - Updated `phpunit.xml` to PHPUnit 11's current `source` schema; the configuration warning is resolved.
+- Committed the verified Laravel 12 checkpoint as `6801dd68`.
+- Resolved Laravel 13.42.0, Tinker 3.1.0, and PHPUnit 12.5.44 without bypassing security checks or platform requirements; Composer reported no known vulnerability advisories.
+- Upgraded only the Inertia server adapter to 2.0.28 because the 1.x line stops at Laravel 12. React, Vite, Tailwind, and all JavaScript dependencies remain unchanged.
+- Replaced direct framework CSRF alias references with `PreventRequestForgery` while keeping the application's legacy middleware class and kernel structure.
+- Added Laravel 13's cache unserialization hardening (`serializable_classes => false`). No application cache calls store PHP objects.
+- Kept session serialization explicitly set to `php` so deployment does not invalidate active sessions.
+- Audited all Laravel 13 guide impact areas. There are no application `upsert` calls, custom affected framework-contract implementations, legacy `array_first` / `array_last` helpers, queue event property references, or affected container calls.
+- Preserved 342 routes, 207 API routes, and all 49 mobile API v1 routes. Laravel 13 exposes route-model binding keys and the new `QUERY` method in `route:list`; after normalizing those framework representation changes, route methods, paths, and names match Laravel 12.
+- Ran all 98 migrations successfully against `/workspace/.cloud-setup/laravel13.sqlite`.
+- Passed the Laravel 13 smoke set (6 tests, 6 assertions), Sanctum/mobile API regression set (2 tests, 8 assertions), and complete suite (20 tests, 26 assertions) on isolated database copies.
+- Updated the tracked Docker and Sail definitions to PHP 8.4 and included the required HTTP/Raphf extensions. `docker compose config --quiet` passes (with expected warnings when local `.env` variables are absent).
+- A separate `composer audit --locked` retry cannot reach `https://packagist.org/api/security-advisories/` from this environment (CONNECT tunnel HTTP 403). The successful final `composer update` performed its integrated advisory check and reported no known advisories.
+
+## Phase C exact versions
+
+| Package | Version |
+| --- | --- |
+| PHP | 8.4.27 |
+| Composer | 2.11.2 |
+| laravel/framework | v13.42.0 |
+| laravel/sanctum | v4.4.0 |
+| laravel/fortify | v1.42.0 |
+| laravel/scout | v11.10.0 |
+| laravel/tinker | v3.1.0 |
+| inertiajs/inertia-laravel | v2.0.28 |
+| livewire/livewire | v3.8.11 |
+| matchish/laravel-scout-elasticsearch | v7.14.3 |
+| spatie/laravel-google-cloud-storage | 2.4.2 |
+| spatie/laravel-medialibrary | 11.23.13 |
+| nunomaduro/collision | v8.9.6 |
+| spatie/laravel-ignition | 2.13.0 |
+| phpunit/phpunit | 12.5.44 |
 
 ## Phase B exact versions
 
@@ -97,12 +129,14 @@ Phase B (Laravel 12) — verified and ready for its checkpoint commit. Phase A i
 - Composer reports `amadeus4dev/amadeus-php` as abandoned with no suggested replacement. It remains installed to preserve the existing flight integration.
 - Composer reports pre-existing PSR-4 path/namespace mismatches in backup seeders and several request/resource/controller classes. Package discovery succeeds, but those classes need a separate compatibility review if exercised.
 
-## Outstanding verification
+## Outstanding production verification
 
-- Commit the verified Laravel 12 checkpoint.
-- Repeat the complete verification gate for Laravel 13.
+- Exercise real booking, payment, Amadeus, Elasticsearch, Google Cloud Storage, SMS, and email integrations in a credentialed staging environment.
+- Replace or formally accept the abandoned `amadeus4dev/amadeus-php` dependency.
+- Strengthen `AllRoutesTest` so unexpected 4xx/5xx responses fail instead of only being logged.
+- Resolve the pre-existing PSR-4 mismatches and the separate frontend `tour` / `Tour.tsx` case-sensitive import issue.
 
 ## Exact next action
 
-Create the Laravel 12 checkpoint commit, then update Composer constraints for Laravel 13, Tinker 3, and PHPUnit 12.
+Push the `work` branch and open the prepared pull request only with repository-owner authorization, then run the listed credentialed staging checks.
 

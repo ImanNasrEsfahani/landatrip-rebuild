@@ -18,6 +18,12 @@ Upgrade Laravel incrementally through verified Laravel 11, 12, and 13 checkpoint
 - Record non-obvious compatibility choices in `docs/MIGRATION_DECISIONS.md`.
 - Create one meaningful commit per verified Laravel major. Do not push or merge.
 
+## Verified result
+
+- Laravel 11 checkpoint: `fb9c9e45`.
+- Laravel 12 checkpoint: `6801dd68`.
+- Laravel 13 is verified on PHP 8.4.27 with 342 routes, 98 successful migrations, and 20 passing tests. See `docs/MIGRATION_STATUS.md` for exact versions and remaining staging checks.
+
 ## Out of scope
 
 - Do not upgrade React, Vite, Tailwind, or MySQL.

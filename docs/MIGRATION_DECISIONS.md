@@ -50,3 +50,21 @@ Last updated: 2026-11-15
 
 **Reason:** Matchish 7.14 is the release line compatible with Laravel 12 and requires Scout 11. The resolved pair boots, preserves all registered search-related routes, and passes the full application suite.
 
+## D-009 — Upgrade only the Inertia server adapter
+
+**Decision:** Upgrade `inertiajs/inertia-laravel` from 1.x to 2.x for Laravel 13, without changing any JavaScript dependencies.
+
+**Reason:** Inertia Laravel 1.x supports Laravel only through version 12, while 2.x explicitly supports Laravel 13. This is a backend compatibility change and keeps the React/Vite/Tailwind scope frozen.
+
+## D-010 — Adopt Laravel 13 cache hardening without ending sessions
+
+**Decision:** Disable arbitrary cache object unserialization with `serializable_classes => false`, but explicitly retain PHP session serialization during this upgrade.
+
+**Reason:** The application has no cache calls that store PHP objects, so the hardened cache default is safe. Changing session serialization to JSON would invalidate active sessions; retaining PHP preserves user-panel continuity and does not affect Sanctum personal access tokens.
+
+## D-011 — Update CSRF references while retaining the legacy kernel
+
+**Decision:** Make the existing application `VerifyCsrfToken` middleware extend Laravel 13's `PreventRequestForgery` class and point Sanctum at the same modern framework middleware.
+
+**Reason:** Laravel 13 deprecates the framework `VerifyCsrfToken` and `ValidateCsrfToken` aliases. Keeping the application class name avoids restructuring the legacy kernel while enabling Laravel 13 request-origin protection.
+

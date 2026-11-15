@@ -57,7 +57,9 @@ Status: verified on Laravel `v12.72.0`. The route inventory is unchanged from th
 - Audit cache/session naming, cache unserialization configuration, nullable container defaults, MySQL/MariaDB `upsert` calls, and direct CSRF middleware references.
 - Repeat the complete verification gate and commit only when it passes.
 
+Status: verified on Laravel `v13.42.0` with PHP `8.4.27`. The semantic route inventory is preserved, all 98 migrations pass on a fresh SQLite database, and the complete 20-test suite passes on PHPUnit 12.
+
 ## Delivery
 
-Prepare a PR-ready branch with the three checkpoint commits, exact dependency versions, verification results, remaining risks, PHP requirements, and reproducible setup/test commands. Do not push or merge automatically.
+The branch is PR-ready after the Laravel 13 checkpoint commit. Exact dependency versions, verification results, remaining risks, PHP requirements, and reproducible setup/test commands are recorded in `MIGRATION_STATUS.md` and `PULL_REQUEST.md`. Do not push or merge automatically.
 
