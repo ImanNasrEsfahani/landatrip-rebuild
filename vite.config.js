@@ -2,21 +2,11 @@ import {defineConfig} from 'vite';
 import laravel from 'laravel-vite-plugin';
 import inject from '@rollup/plugin-inject';
 import react from '@vitejs/plugin-react';
-import rtlcss from "rtlcss";
-import autoprefixer from "autoprefixer";
-import purge from '@erbelion/vite-plugin-laravel-purgecss';
 
 export default defineConfig({
-        css: {
-            postCss: {
-                plugins: {
-                    tailwindcss: {},
-                    autoprefixer: {},
-                },
-            },
-        },
         plugins: [
             inject({
+                include: ['**/*.{js,jsx,ts,tsx}'],
                 $: 'jquery', jQuery: 'jquery', 'window.jQuery': 'jquery'
             }),
             laravel({
