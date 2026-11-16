@@ -2,11 +2,11 @@
 
 ## Reproducible local stack
 
-`docker-compose.e2e.yml` defines a separate `landatrip-e2e` Compose project. It uses PHP 8.4 from `docker/e2e/Dockerfile`, a tmpfs backed MySQL 8.0 service, and local port 8000. Node 22 runs the pinned npm lockfile and Playwright. The Compose project does not touch the existing Sail stack or production infrastructure. The test database is named `landatrip_e2e`; the fixture seeder refuses any other name.
+`docker-compose.e2e.yml` defines a separate `landatrip-e2e` Compose project. It uses PHP 8.4 from `docker/e2e/Dockerfile`, a tmpfs backed MySQL 8.0 service, and local port 8000. Node 22.12 or newer runs the pinned npm lockfile and Playwright; CI pins Node 22.12. The Compose project does not touch the existing Sail stack or production infrastructure. The test database is named `landatrip_e2e`; the fixture seeder refuses any other name.
 
 Run `bash scripts/e2e-run.sh` from a checkout with Docker, Docker Compose, and Node 22. The script installs pinned Composer and npm dependencies, builds Vite assets, migrates the disposable database, seeds five synthetic users and one tour/group, creates the local storage link, starts the app, and runs Chromium. It generates a fresh app key and browser password in process memory. The local app remains on `http://127.0.0.1:8000` after the suite. `docker compose -f docker-compose.e2e.yml down -v` removes only this isolated stack.
 
-The app uses array mail/cache, local files, synchronous queue, and null Scout. E2E browser requests to nonlocal hosts are aborted. No payment, SMS, flight, GCS, or customer notification flow is exercised. The committed `.env.testing.example` contains no live credentials. The test setup never copies customer data.
+The app uses array mail/cache, local files, synchronous queue, and null Scout. E2E browser requests to nonlocal hosts are aborted. Payment callbacks are checked only with a mocked provider in Laravel feature tests. No purchase, SMS, flight, GCS, or customer notification flow is exercised. The committed `.env.testing.example` contains no live credentials. The test setup never copies customer data.
 
 ## Readiness gates
 

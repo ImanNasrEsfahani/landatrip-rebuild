@@ -13,6 +13,8 @@ The script generates temporary keys, starts the isolated app at `http://127.0.0.
 
 Read `playwright-report/index.html` locally. Screenshots and failure traces are under `test-results/`. CI uploads these as a `playwright-results` artifact. To stop and discard the disposable database:
 
+For a repeat run in a prepared checkout, `E2E_REUSE_DEPS=1 bash scripts/e2e-run.sh` skips dependency installation and asset rebuilding while still recreating and seeding the disposable database. Rebuild assets first if frontend files changed.
+
 ```bash
 docker compose -f docker-compose.e2e.yml down -v
 ```
