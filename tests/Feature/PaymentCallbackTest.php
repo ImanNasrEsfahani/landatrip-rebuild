@@ -122,4 +122,16 @@ class PaymentCallbackTest extends TestCase
         $this->assertSame(TransactionStatusEnum::pending, $transaction->fresh()->status->value);
         $this->assertSame(InvoiceStatusEnum::pending, $transaction->invoice->fresh()->status->value);
     }
+
+    public function test_commercial_callback_rejects_a_synthetic_invoice_before_provider_call(): void
+    {
+        $transaction = $this->pendingTransaction();
+        DB::table('invoices')->where('id', $transaction->invoice_id)
+            ->update(['pricing_version' => config('booking_test.pricing_version')]);
+        Payment::shouldReceive('amount')->never();
+
+        $this->get('/payment/verify?Authority='.$transaction->authority.'&Status=OK')->assertNotFound();
+        $this->assertSame(TransactionStatusEnum::pending, $transaction->fresh()->status->value);
+        $this->assertSame(InvoiceStatusEnum::pending, $transaction->invoice->fresh()->status->value);
+    }
 }

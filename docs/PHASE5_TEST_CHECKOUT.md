@@ -27,7 +27,7 @@ Live checkout requires approved and versioned commercial rules, provider credent
 
 Run `bash scripts/e2e-run.sh` for disposable MySQL 8, locked dependencies, Laravel migration and seeding, and Playwright Chromium. Run `php artisan test` inside the E2E PHP container and `npm run test:frontend` for the remaining CI gates. The Chromium suite checks five panels, mobile API v1, and the synthetic quote through callback flow. The fixture endpoints are only intended for this isolated database.
 
-Local verification on 2026-11-16: 31 Laravel tests passed; the React/Vite client and SSR bundles built and all 12 manifest entry points validated; the complete Chromium suite passed 12 tests; and the final browser-driven checkout test passed again against a freshly seeded MySQL 8 database. `npm audit --audit-level=high` reported zero vulnerabilities. Composer validation and platform requirements passed. The local Composer advisory request could not complete because the network proxy returned HTTP 403; the pull request backend CI must supply that check.
+Local pre-merge verification on 2026-11-16: 35 Laravel tests passed on a separate MySQL 8 backend database; 4 fixture-only tests were skipped there and passed against the disposable E2E database (53 assertions). The React/Vite client and SSR bundles built and all 12 manifest entry points validated. The full Chromium suite passed 12 tests against a freshly seeded MySQL 8 database. `npm audit --audit-level=high` reported zero vulnerabilities. Composer validation and PHP platform requirements passed. The local Composer advisory request could not complete because the network proxy returned HTTP 403; the pull request backend CI runs that check.
 
 ### Pre-merge legacy-data audit
 
