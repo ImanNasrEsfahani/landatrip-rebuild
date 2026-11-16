@@ -28,6 +28,7 @@
 - Docker Compose configuration: valid for the PHP 8.4 Sail runtime with HTTP/Raphf extensions.
 - Final MySQL verification: all 98 migrations passed on isolated MySQL 8.0.46; the strengthened suite passed 21 tests with 73 assertions.
 - Backend CI: PHP 8.4, Composer 2, required extensions, MySQL 8.0, route inventory, Composer audit, migrations, and the complete test suite.
+- Backend tests disable Vite rendering through Laravel's test helper so clean checkouts do not need ignored frontend build artifacts; frontend dependencies remain unchanged.
 
 ## Reproduce
 

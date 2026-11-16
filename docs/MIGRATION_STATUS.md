@@ -70,8 +70,9 @@ Phase C (Laravel 13) — verified and committed as `63fef424`. Phase A is commit
 - Seeded only the three language records required by the existing page controllers; the complete suite then passed on MySQL: 21 tests and 73 assertions.
 - Replaced `AllRoutesTest`'s unconditional assertions with explicit status contracts for 12 stable public endpoints, login redirects for all five protected panels, and registration-only checks for known placeholder routes.
 - Expanded mobile API v1 coverage to assert the complete 49-route inventory, the 34 Sanctum-protected / 15 public split, methods and middleware for nine critical endpoints, unauthenticated rejection, token persistence, and authenticated access.
+- Backend tests now call Laravel's `withoutVite()` helper, so clean CI checkouts do not require ignored frontend build artifacts. No React, Vite, Tailwind, or JavaScript dependency was changed.
 - Laravel bootstrapping remains `13.42.0`; route inventory remains 342 total, 207 API, and 49 mobile API v1 routes.
-- The local network still blocks Packagist's standalone Composer advisory endpoint with CONNECT tunnel HTTP 403. CI runs `composer audit --locked --abandoned=report` against Packagist; advisories fail the job while the already-documented abandoned Amadeus package is reported as a remaining risk.
+- The local network still blocks Packagist's standalone Composer advisory endpoint with CONNECT tunnel HTTP 403. GitHub Actions successfully ran `composer audit --locked --abandoned=report` against Packagist with no security advisories; the already-documented abandoned Amadeus package remains a reported risk.
 
 ## Phase C exact versions
 
