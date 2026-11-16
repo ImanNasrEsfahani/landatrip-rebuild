@@ -45,6 +45,11 @@ class E2eSeeder extends Seeder
                     $user->addRole($role);
                 }
             }
+            User::withoutEvents(fn () => User::firstOrCreate(
+                ['email' => 'e2e-other@example.invalid'],
+                ['fname' => 'E2E', 'lname' => 'Other', 'slug' => 'e2e-other',
+                    'email_verified_at' => now(), 'password' => Hash::make($password)]
+            ));
 
             $regionId = DB::table('regions')->insertGetId(['name' => 'E2E Region', 'slug' => 'e2e-region']);
             $countryId = DB::table('countries')->insertGetId([
@@ -79,9 +84,26 @@ class E2eSeeder extends Seeder
             ]);
             DB::table('group_price_items')->insert([
                 'group_id' => $group->id, 'currency_id' => $currencyId,
-                'title' => 'Sample stored item', 'amount' => 125,
+                'title' => 'Sample stored item', 'amount' => '125.00',
+                'pricing_version' => 'synthetic-cad-v1', 'pricing_role' => 'optional',
+                'participant_category' => 'adult',
                 'created_at' => now(), 'updated_at' => now(),
             ]);
+            $cadId = DB::table('currencies')->insertGetId([
+                'name' => 'CAD', 'symbol' => 'C$', 'flag' => 'fixture',
+            ]);
+            foreach ([
+                ['Synthetic participant', '42.35', 'mandatory'],
+                ['Synthetic optional extra', '7.20', 'optional'],
+            ] as [$title, $amount, $role]) {
+                DB::table('group_price_items')->insert([
+                    'group_id' => $group->id, 'currency_id' => $cadId,
+                    'title' => $title, 'amount' => $amount,
+                    'pricing_version' => 'synthetic-cad-v1', 'pricing_role' => $role,
+                    'participant_category' => 'adult',
+                    'created_at' => now(), 'updated_at' => now(),
+                ]);
+            }
         });
     }
 }
