@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { stayLocal } from './helpers';
+import { login, stayLocal } from './helpers';
 
 test.beforeEach(async ({ page }) => stayLocal(page));
 
@@ -56,6 +56,21 @@ test('seeded tour detail and public assets load', async ({ page }) => {
   });
   expect(availability.status()).toBe(200);
   expect((await availability.json()).data.capacity).toBe(8);
+});
+
+test('booking step one loads the seeded tour and group', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await login(page, 'user');
+  const response = await page.goto('/tour/e2e-sample-tour/group/e2e-sample-group/step1');
+  expect(response?.status()).toBe(200);
+  await expect(page.locator('#booking-tour')).toHaveAttribute('tour_slug', 'e2e-sample-tour');
+  await expect(page.locator('#booking-tour')).toHaveAttribute('group_slug', 'e2e-sample-group');
+  await expect(page.getByText('Trip info')).toBeVisible();
+  await expect(page.getByText('E2E Sample Tour')).toBeVisible();
+  await waitForPublicPaint(page);
+  await page.screenshot({ path: 'test-results/booking-step1.png', fullPage: true });
+  expect(errors).toEqual([]);
 });
 
 test('mobile layout and contact form render', async ({ page }) => {
