@@ -133,12 +133,14 @@ class TourController extends Controller
         [$transactionObj, $completed, $changed] = DB::transaction(function () use ($request) {
             $transaction = Transaction::where('authority', $request->validated('Authority'))
                 ->lockForUpdate()->firstOrFail();
+            abort_if($transaction->provider === 'fake', 404);
 
             if ($transaction->status->value !== TransactionStatusEnum::pending) {
                 return [$transaction, $transaction->status->value === TransactionStatusEnum::completed, false];
             }
 
             $invoice = Invoice::whereKey($transaction->invoice_id)->lockForUpdate()->firstOrFail();
+            abort_if($invoice->pricing_version === config('booking_test.pricing_version'), 404);
             if ($invoice->status->value === InvoiceStatusEnum::paid) {
                 return [$transaction, true, false];
             }

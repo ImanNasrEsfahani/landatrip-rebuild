@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 export E2E_APP_KEY="${E2E_APP_KEY:-base64:$(node -e 'process.stdout.write(require("crypto").randomBytes(32).toString("base64"))')}"
 export E2E_TEST_PASSWORD="${E2E_TEST_PASSWORD:-$(node -e 'process.stdout.write(require("crypto").randomBytes(24).toString("hex"))')}"
+export BOOKING_TEST_FIXTURE_TOKEN="${BOOKING_TEST_FIXTURE_TOKEN:-$(node -e 'process.stdout.write(require("crypto").randomBytes(32).toString("hex"))')}"
 export VITE_APP_URL=http://127.0.0.1:8000
 cat > .env.e2e <<EOF
 APP_NAME=LandaTrip
@@ -27,6 +28,7 @@ TEST_ENABLED=false
 BOOKING_TEST_CHECKOUT_ENABLED=true
 BOOKING_TEST_GATEWAY=fake
 BOOKING_TEST_HOLD_MINUTES=15
+BOOKING_TEST_FIXTURE_TOKEN=$BOOKING_TEST_FIXTURE_TOKEN
 EOF
 chmod 600 .env.e2e
 
@@ -50,6 +52,7 @@ npm run build
 "${compose[@]}" up -d mysql
 "${compose[@]}" run --rm app php artisan migrate:fresh --force
 "${compose[@]}" run --rm app php artisan db:seed --class=E2eSeeder --force
+"${compose[@]}" run --rm app php artisan test --filter=TestCheckoutIsolationTest
 "${compose[@]}" run --rm app php artisan storage:link
 "${compose[@]}" up -d app
 

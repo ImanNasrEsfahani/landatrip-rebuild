@@ -48,6 +48,7 @@ services:
       BOOKING_TEST_CHECKOUT_ENABLED: 'true'
       BOOKING_TEST_GATEWAY: fake
       BOOKING_TEST_HOLD_MINUTES: '15'
+      BOOKING_TEST_FIXTURE_TOKEN: ${BOOKING_TEST_FIXTURE_TOKEN:?Set BOOKING_TEST_FIXTURE_TOKEN to a generated token}
       E2E_TEST_PASSWORD: ${E2E_TEST_PASSWORD:?Set E2E_TEST_PASSWORD to a temporary value}
     command: php artisan serve --host=0.0.0.0 --port=8000
     depends_on:
