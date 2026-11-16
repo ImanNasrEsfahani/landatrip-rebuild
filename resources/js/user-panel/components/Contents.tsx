@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Route, Routes} from "react-router-dom";
 
-import Tour from "../views/tsx/tours/tour";
+import Tour from "../views/tsx/tours/Tour";
 import Dashboard from "../views/tsx/dashboard/Dashboard";
 import AccountInfo from "../views/tsx/account-info/AccountInfo";
 import Applications from "../views/tsx/applications/Applications";
