@@ -13,7 +13,7 @@
 
 - Laravel 11: `fb9c9e45` (`v11.57.1`)
 - Laravel 12: `6801dd68` (`v12.72.0`)
-- Laravel 13: final commit containing this PR description (`v13.42.0`)
+- Laravel 13: `63fef424` (`v13.42.0`)
 
 ## Verification
 

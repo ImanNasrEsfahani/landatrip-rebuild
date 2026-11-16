@@ -1,16 +1,17 @@
 # Laravel Migration Status
 
-Last updated: 2026-11-15
+Last updated: 2026-11-16
 
 ## Current checkpoint
 
-Phase C (Laravel 13) — verified and committed as the `Upgrade application to Laravel 13` checkpoint. Phase A is committed as `fb9c9e45`; Phase B is committed as `6801dd68`.
+Phase C (Laravel 13) — verified and committed as `63fef424`. Phase A is committed as `fb9c9e45`; Phase B is committed as `6801dd68`.
 
 ## Verified current state
 
 | Item | State |
 | --- | --- |
-| Git branch / start commit | `work` / `a39bb498` |
+| Delivery branch / start commit | `feature/laravel-13-modernization` / `a39bb498` |
+| Pull request | Open against `main`: `https://github.com/ImanNasrEsfahani/landatrip-rebuild/pull/1` |
 | Start working tree | Clean |
 | Laravel | `v13.42.0` from current `composer.lock` |
 | Sanctum | `v4.4.0` |
@@ -138,5 +139,5 @@ Phase C (Laravel 13) — verified and committed as the `Upgrade application to L
 
 ## Exact next action
 
-Push the `work` branch and open the prepared pull request only with repository-owner authorization, then run the listed credentialed staging checks.
+Review Pull Request #1 and run the listed credentialed staging checks. Do not merge until those deployment risks are accepted or resolved.
 
