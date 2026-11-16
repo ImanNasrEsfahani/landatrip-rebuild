@@ -16,7 +16,10 @@ class E2eSeeder extends Seeder
 {
     public function run(): void
     {
-        if (config('database.default') !== 'mysql' || config('database.connections.mysql.database') !== 'landatrip_e2e') {
+        if (config('database.default') !== 'mysql'
+            || config('database.connections.mysql.host') !== 'mysql'
+            || config('database.connections.mysql.database') !== 'landatrip_e2e'
+            || config('database.connections.mysql.username') !== 'landatrip_e2e') {
             throw new RuntimeException('E2E fixtures require the disposable landatrip_e2e MySQL database.');
         }
 
@@ -24,8 +27,15 @@ class E2eSeeder extends Seeder
         if (! is_string($password) || strlen($password) < 16) {
             throw new RuntimeException('Provide a temporary E2E_TEST_PASSWORD of at least 16 characters.');
         }
+        $fixtureToken = config('booking_test.fixture_token');
+        if (! is_string($fixtureToken) || strlen($fixtureToken) < 32) {
+            throw new RuntimeException('Provide a temporary BOOKING_TEST_FIXTURE_TOKEN of at least 32 characters.');
+        }
 
-        DB::transaction(function () use ($password): void {
+        DB::transaction(function () use ($password, $fixtureToken): void {
+            DB::table('test_checkout_fixture_markers')->insert([
+                'token_hash' => hash('sha256', $fixtureToken), 'created_at' => now(), 'updated_at' => now(),
+            ]);
             $language = Language::firstOrCreate(['slug' => 'en'], [
                 'title' => 'English', 'preferred_currencies' => [],
             ]);
@@ -108,6 +118,7 @@ class E2eSeeder extends Seeder
                 DB::table('group_price_items')->insert([
                     'group_id' => $group->id, 'currency_id' => $cadId,
                     'title' => $title, 'amount' => $amount,
+                    'amount_exact' => $amount,
                     'pricing_version' => 'synthetic-cad-v1', 'pricing_role' => $role,
                     'participant_category' => 'adult',
                     'created_at' => now(), 'updated_at' => now(),

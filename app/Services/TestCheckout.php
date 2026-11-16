@@ -15,12 +15,40 @@ class TestCheckout
 
     public function available(): bool
     {
-        return config('booking_test.enabled') === true
-            && config('booking_test.gateway') === 'fake'
-            && app()->environment(['local', 'testing'])
-            && config('database.default') === 'mysql'
-            && config('database.connections.mysql.database') === 'landatrip_e2e'
-            && config('booking_test.hold_minutes') > 0;
+        $token = config('booking_test.fixture_token');
+        if (config('booking_test.enabled') !== true
+            || config('booking_test.gateway') !== 'fake'
+            || ! app()->environment(['local', 'testing'])
+            || config('database.default') !== 'mysql'
+            || config('database.connections.mysql.host') !== 'mysql'
+            || config('database.connections.mysql.database') !== 'landatrip_e2e'
+            || config('database.connections.mysql.username') !== 'landatrip_e2e'
+            || config('booking_test.hold_minutes') <= 0
+            || ! is_string($token) || strlen($token) < 32) {
+            return false;
+        }
+        try {
+            $connection = DB::connection('mysql');
+            return $connection->selectOne('SELECT DATABASE() AS name')->name === 'landatrip_e2e'
+                && $connection->table('test_checkout_fixture_markers')
+                    ->where('token_hash', hash('sha256', $token))->exists();
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    private function isSyntheticInvoice(?object $invoice): bool
+    {
+        return $invoice !== null
+            && $invoice->pricing_version === config('booking_test.pricing_version')
+            && is_string($invoice->checkout_key) && $invoice->checkout_key !== ''
+            && is_string($invoice->checkout_fingerprint) && $invoice->checkout_fingerprint !== ''
+            && $invoice->test_checkout_token_hash === hash('sha256', config('booking_test.fixture_token'))
+            && is_array($snapshot = json_decode($invoice->pricing_snapshot ?? '', true))
+            && ($snapshot['version'] ?? null) === config('booking_test.pricing_version')
+            && ($snapshot['currency'] ?? null) === 'CAD'
+            && ($snapshot['total'] ?? null) === $invoice->total_exact
+            && is_int($snapshot['gateway_minor_units'] ?? null);
     }
 
     private function minor(string $amount): int
@@ -55,7 +83,7 @@ class TestCheckout
         abort_unless($currency === 'CAD', 409, 'Synthetic currency is unconfigured.');
         $lines = [[
             'item_id' => $base->id, 'title' => $base->title, 'category' => 'adult',
-            'quantity' => count($participants), 'unit_minor' => $this->minor((string) $base->amount),
+            'quantity' => count($participants), 'unit_minor' => $this->minor((string) $base->amount_exact),
         ]];
         $seen = [];
         foreach ($extras as $extra) {
@@ -70,7 +98,7 @@ class TestCheckout
             abort_unless($item->currency_id === $base->currency_id, 409, 'Mixed currencies are unavailable.');
             $lines[] = [
                 'item_id' => $item->id, 'title' => $item->title, 'category' => 'adult',
-                'quantity' => $extra['quantity'], 'unit_minor' => $this->minor((string) $item->amount),
+                'quantity' => $extra['quantity'], 'unit_minor' => $this->minor((string) $item->amount_exact),
             ];
         }
         $subtotal = array_sum(array_map(fn ($line) => $line['quantity'] * $line['unit_minor'], $lines));
@@ -111,6 +139,10 @@ class TestCheckout
         $expired = DB::table('booking_holds')->where('group_id', $groupId)
             ->where('status', 'active')->where('expires_at', '<=', now())->get();
         foreach ($expired as $hold) {
+            $invoice = DB::table('invoices')->where('id', $hold->invoice_id)->first();
+            if (! $this->isSyntheticInvoice($invoice)) {
+                continue;
+            }
             DB::table('booking_holds')->where('id', $hold->id)->update(['status' => 'expired', 'updated_at' => now()]);
             DB::table('invoices')->where('id', $hold->invoice_id)->where('status', 0)
                 ->update(['status' => 3, 'updated_at' => now()]);
@@ -161,6 +193,9 @@ class TestCheckout
                 'expire' => $expires->toDateString(), 'hold_expires_at' => $expires,
                 'pricing_version' => $quote['version'], 'pricing_snapshot' => json_encode($quote),
                 'checkout_key' => $key, 'checkout_fingerprint' => $fingerprint,
+                'test_checkout_token_hash' => hash('sha256', config('booking_test.fixture_token')),
+                'subtotal_exact' => $quote['subtotal'], 'discount_exact' => $quote['discount'],
+                'tax_exact' => $quote['tax'], 'total_exact' => $quote['total'],
                 'status' => 0, 'created_at' => now(), 'updated_at' => now(),
             ]);
             foreach ($quote['lines'] as $line) {
@@ -185,7 +220,7 @@ class TestCheckout
     {
         $this->guard();
         $invoice = DB::table('invoices')->where('id', $id)->where('user_id', $userId)->first();
-        abort_unless($invoice, 404);
+        abort_unless($this->isSyntheticInvoice($invoice), 404);
         $details = DB::table('invoice_details')->where('invoice_id', $id)->get();
         $hold = DB::table('booking_holds')->where('invoice_id', $id)->first();
         return [
@@ -205,7 +240,7 @@ class TestCheckout
         $this->guard();
         return DB::transaction(function () use ($id, $userId) {
             $invoice = DB::table('invoices')->where('id', $id)->where('user_id', $userId)->lockForUpdate()->first();
-            abort_unless($invoice, 404);
+            abort_unless($this->isSyntheticInvoice($invoice), 404);
             $hold = DB::table('booking_holds')->where('invoice_id', $id)->lockForUpdate()->first();
             abort_unless($invoice->status === 0 && $hold?->status === 'active' && $hold->expires_at > now(), 409, 'Invoice is no longer payable.');
             $transaction = DB::table('transactions')->where('invoice_id', $id)->where('provider', 'fake')->first();
@@ -230,9 +265,13 @@ class TestCheckout
             $transaction = DB::table('transactions')->where('authority', $authority)->where('provider', 'fake')->first();
             abort_unless($transaction, 404);
             $invoice = DB::table('invoices')->where('id', $transaction->invoice_id)->lockForUpdate()->first();
+            abort_unless($this->isSyntheticInvoice($invoice), 404);
             $hold = DB::table('booking_holds')->where('invoice_id', $invoice->id)->lockForUpdate()->first();
+            abort_unless($hold && $hold->group_id === DB::table('invoice_details')
+                ->where('invoice_id', $invoice->id)->value('group_id'), 404);
             $transaction = DB::table('transactions')->where('id', $transaction->id)->lockForUpdate()->first();
-            if ($transaction->status !== 0) {
+            abort_unless((int) $transaction->gateway_minor_units === json_decode($invoice->pricing_snapshot, true)['gateway_minor_units'], 409);
+            if ($transaction->status !== 0 || $invoice->status !== 0) {
                 return ['status' => $invoice->status, 'duplicate' => true];
             }
             if ($hold->expires_at <= now() || $hold->status !== 'active') {
@@ -253,7 +292,7 @@ class TestCheckout
     {
         $this->guard();
         $invoice = DB::table('invoices')->where('id', $id)->where('user_id', $userId)->first();
-        abort_unless($invoice, 404);
+        abort_unless($this->isSyntheticInvoice($invoice), 404);
         DB::transaction(function () use ($id) {
             $hold = DB::table('booking_holds')->where('invoice_id', $id)->first();
             abort_unless($hold?->status === 'active', 409);

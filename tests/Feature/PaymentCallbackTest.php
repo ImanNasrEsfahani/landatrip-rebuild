@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\Transaction;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Mockery;
 use RuntimeException;
@@ -109,5 +110,28 @@ class PaymentCallbackTest extends TestCase
             ->assertSuccessful()->assertViewIs('payment-result.payment-successful');
         $this->assertSame(TransactionStatusEnum::pending, $second->fresh()->status->value);
         Event::assertNotDispatched(SuccessPaymentEvent::class);
+    }
+
+    public function test_commercial_callback_rejects_fake_transaction_before_provider_call(): void
+    {
+        $transaction = $this->pendingTransaction();
+        DB::table('transactions')->where('id', $transaction->id)->update(['provider' => 'fake']);
+        Payment::shouldReceive('amount')->never();
+
+        $this->get('/payment/verify?Authority='.$transaction->authority.'&Status=OK')->assertNotFound();
+        $this->assertSame(TransactionStatusEnum::pending, $transaction->fresh()->status->value);
+        $this->assertSame(InvoiceStatusEnum::pending, $transaction->invoice->fresh()->status->value);
+    }
+
+    public function test_commercial_callback_rejects_a_synthetic_invoice_before_provider_call(): void
+    {
+        $transaction = $this->pendingTransaction();
+        DB::table('invoices')->where('id', $transaction->invoice_id)
+            ->update(['pricing_version' => config('booking_test.pricing_version')]);
+        Payment::shouldReceive('amount')->never();
+
+        $this->get('/payment/verify?Authority='.$transaction->authority.'&Status=OK')->assertNotFound();
+        $this->assertSame(TransactionStatusEnum::pending, $transaction->fresh()->status->value);
+        $this->assertSame(InvoiceStatusEnum::pending, $transaction->invoice->fresh()->status->value);
     }
 }
