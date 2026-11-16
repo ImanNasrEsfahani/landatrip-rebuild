@@ -12,6 +12,14 @@ if grep -Eq '^(BOOKING_TEST_CHECKOUT_ENABLED|TEST_ENABLED)=true' .env.staging; t
 fi
 export STAGING_IMAGE_TAG="$(git rev-parse --short=12 HEAD)"
 compose=(docker compose --env-file .env.staging -f compose.staging.yml)
+if [[ -n "${STAGING_CA_BUNDLE:-}" ]]; then
+  local_build_ca="$(mktemp -p . .staging-build-ca.XXXXXX.pem)"
+  trap 'rm -f "$local_build_ca"' EXIT
+  cp -- "$STAGING_CA_BUNDLE" "$local_build_ca"
+  chmod 600 "$local_build_ca"
+  export STAGING_BUILD_CA_FILE="$PWD/$local_build_ca"
+  compose+=(-f compose.staging.ca.yml)
+fi
 "${compose[@]}" config --quiet
 if [[ "${STAGING_EDGE:-public}" == local ]]; then
   docker compose --env-file .env.staging -f compose.staging.yml -f compose.staging.local.yml stop local-edge web || true

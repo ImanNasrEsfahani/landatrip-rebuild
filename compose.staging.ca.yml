@@ -1,0 +1,11 @@
+# Add only when a local TLS-inspecting proxy requires a custom CA for builds.
+services:
+  app:
+    build:
+      secrets: [build_ca]
+  web:
+    build:
+      secrets: [build_ca]
+secrets:
+  build_ca:
+    file: ${STAGING_BUILD_CA_FILE:?Use scripts/staging-deploy.sh with STAGING_CA_BUNDLE}

@@ -45,7 +45,6 @@ services:
       context: .
       dockerfile: docker/staging/Dockerfile
       target: php
-      secrets: [build_ca]
       args:
         VITE_APP_URL: ${APP_URL:?Set APP_URL}
         VITE_ASSET_URL: ${APP_URL:?Set APP_URL}
@@ -81,7 +80,6 @@ services:
       context: .
       dockerfile: docker/staging/Dockerfile
       target: web
-      secrets: [build_ca]
       args:
         VITE_APP_URL: ${APP_URL:?Set APP_URL}
         VITE_ASSET_URL: ${APP_URL:?Set APP_URL}
@@ -119,10 +117,6 @@ services:
     networks: [internal, public]
     restart: unless-stopped
     mem_limit: 128m
-
-secrets:
-  build_ca:
-    file: ${STAGING_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}
 
 networks:
   internal:
