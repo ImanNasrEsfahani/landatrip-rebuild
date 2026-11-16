@@ -1,0 +1,46 @@
+name: Staging artifacts and smoke
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+          cache: npm
+      - name: Create isolated local staging configuration
+        run: bash scripts/staging-local-init.sh
+      - name: Validate Compose and build commit images
+        run: |
+          docker compose --env-file .env.staging -f compose.staging.yml config --quiet
+          STAGING_EDGE=local bash scripts/staging-deploy.sh
+      - name: Add synthetic panel accounts
+        run: bash scripts/staging-seed.sh
+      - name: Verify image artifacts and PHP platform
+        run: |
+          docker compose --env-file .env.staging -f compose.staging.yml exec -T app sh -c 'composer check-platform-reqs --no-dev && test -s public/build/manifest.json && test -s bootstrap/ssr/ssr.mjs'
+      - name: Run protected HTTPS Chromium smoke
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          set -a
+          source .staging-access
+          source .staging-credentials
+          set +a
+          npm run test:staging
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-playwright-results
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore

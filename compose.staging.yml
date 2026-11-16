@@ -1,0 +1,135 @@
+name: landatrip-staging
+x-app-env: &app-env
+  env_file:
+    - path: .env.staging
+      required: true
+  environment:
+    APP_ENV: staging
+    APP_DEBUG: 'false'
+    DB_CONNECTION: mysql
+    DB_HOST: mysql
+    DB_PORT: '3306'
+    DB_DATABASE: landatrip_staging
+    DB_USERNAME: landatrip_staging
+    DB_PASSWORD: ${STAGING_DB_PASSWORD:?Set STAGING_DB_PASSWORD}
+    INERTIA_SSR_ENABLED: 'false'
+    BOOKING_TEST_CHECKOUT_ENABLED: 'false'
+    BOOKING_TEST_GATEWAY: ''
+    TEST_ENABLED: 'false'
+  volumes:
+    - staging_storage:/app/storage
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${STAGING_DB_ROOT_PASSWORD:?Set STAGING_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: landatrip_staging
+      MYSQL_USER: landatrip_staging
+      MYSQL_PASSWORD: ${STAGING_DB_PASSWORD:?Set STAGING_DB_PASSWORD}
+    volumes:
+      - staging_mysql:/var/lib/mysql
+    networks: [internal]
+    healthcheck:
+      test: [CMD-SHELL, 'mysqladmin ping -h 127.0.0.1 -p"$$MYSQL_ROOT_PASSWORD" --silent']
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    mem_limit: 768m
+
+  app:
+    <<: *app-env
+    image: landatrip-staging-php:${STAGING_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: docker/staging/Dockerfile
+      target: php
+      secrets: [build_ca]
+      args:
+        VITE_APP_URL: ${APP_URL:?Set APP_URL}
+        VITE_ASSET_URL: ${APP_URL:?Set APP_URL}
+    depends_on:
+      mysql: { condition: service_healthy }
+    networks: [internal]
+    healthcheck:
+      test: [CMD-SHELL, 'php-fpm8.4 -t >/dev/null 2>&1 && kill -0 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    stop_grace_period: 30s
+    mem_limit: 768m
+
+  scheduler:
+    <<: *app-env
+    image: landatrip-staging-php:${STAGING_IMAGE_TAG:-local}
+    command: ["sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
+    user: www-data
+    depends_on:
+      mysql: { condition: service_healthy }
+    networks: [internal]
+    restart: unless-stopped
+    mem_limit: 256m
+
+  web:
+    environment:
+      NO_PROXY: localhost,127.0.0.1,web,app,mysql
+      no_proxy: localhost,127.0.0.1,web,app,mysql
+    image: landatrip-staging-web:${STAGING_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: docker/staging/Dockerfile
+      target: web
+      secrets: [build_ca]
+      args:
+        VITE_APP_URL: ${APP_URL:?Set APP_URL}
+        VITE_ASSET_URL: ${APP_URL:?Set APP_URL}
+    volumes:
+      - staging_storage:/app/storage:ro
+    depends_on:
+      app: { condition: service_healthy }
+    networks: [internal]
+    healthcheck:
+      test: [CMD-SHELL, 'wget -Y off -q -O /dev/null http://127.0.0.1:8080/healthz']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    mem_limit: 128m
+
+  edge:
+    image: caddy:2.10-alpine
+    profiles: [public]
+    ports:
+      - '${STAGING_HTTP_BIND:-0.0.0.0:80}:80'
+      - '${STAGING_HTTPS_BIND:-0.0.0.0:443}:443'
+    environment:
+      STAGING_DOMAIN: ${STAGING_DOMAIN:?Set STAGING_DOMAIN}
+      NO_PROXY: web,app,mysql,localhost,127.0.0.1
+      no_proxy: web,app,mysql,localhost,127.0.0.1
+      STAGING_ACCESS_USER: ${STAGING_ACCESS_USER:?Set STAGING_ACCESS_USER}
+      STAGING_ACCESS_PASSWORD_HASH: ${STAGING_ACCESS_PASSWORD_HASH:?Set STAGING_ACCESS_PASSWORD_HASH}
+    volumes:
+      - ./docker/staging/Caddyfile:/etc/caddy/Caddyfile:ro
+      - staging_caddy_data:/data
+      - staging_caddy_config:/config
+    depends_on:
+      web: { condition: service_started }
+    networks: [internal, public]
+    restart: unless-stopped
+    mem_limit: 128m
+
+secrets:
+  build_ca:
+    file: ${STAGING_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}
+
+networks:
+  internal:
+    internal: true
+  public: {}
+volumes:
+  staging_mysql:
+  staging_storage:
+  staging_caddy_data:
+  staging_caddy_config:

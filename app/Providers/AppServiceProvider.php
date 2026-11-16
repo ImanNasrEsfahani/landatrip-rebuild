@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
     {
         view()->composer(['layout.layout', 'layout.layout-react-public', 'layout.layout-material-public', 'layout.layout-profile', 'errors.layout', 'app'], function ($view) {
             $view->with('current_locale', app()->getLocale());
-            $view->with('available_locales', config('app.available_locales'));
+            $view->with('available_locales', collect(config('app.available_locales')));
         });
 
         view()->composer([
@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
             'panels.user-panel.user-panel'
             ], function ($view) {
             $view->with('current_locale', app()->getLocale());
-            $view->with('available_locales', config('app.available_locales'));
+            $view->with('available_locales', collect(config('app.available_locales')));
         });
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }

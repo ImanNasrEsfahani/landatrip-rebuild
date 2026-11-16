@@ -1,0 +1,11 @@
+https://localhost:8443 {
+    tls internal
+    basic_auth {
+        {$STAGING_ACCESS_USER} {$STAGING_ACCESS_PASSWORD_HASH}
+    }
+    reverse_proxy web:8080 {
+        header_up X-Forwarded-Proto https
+        header_up Authorization {http.request.header.X-Staging-Api-Authorization}
+        header_up -X-Staging-Api-Authorization
+    }
+}
