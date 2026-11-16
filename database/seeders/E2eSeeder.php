@@ -79,6 +79,15 @@ class E2eSeeder extends Seeder
                 'end_date_tour' => now()->addMonths(2)->addDays(3)->toDateString(),
                 'days' => 3, 'nights' => 2, 'min_capacity' => 1, 'max_capacity' => 8,
             ]));
+            Group::withoutEvents(fn () => Group::create([
+                'language_id' => $language->id, 'tour_id' => $tourId,
+                'title' => 'E2E Unpriced Group', 'slug' => 'e2e-unpriced-group',
+                'start_registration_date' => now()->subDay()->toDateString(),
+                'end_registration_date' => now()->addMonth()->toDateString(),
+                'start_date_tour' => now()->addMonths(2)->toDateString(),
+                'end_date_tour' => now()->addMonths(2)->addDays(3)->toDateString(),
+                'days' => 3, 'nights' => 2, 'min_capacity' => 1, 'max_capacity' => 8,
+            ]));
             $currencyId = DB::table('currencies')->insertGetId([
                 'name' => 'USD', 'symbol' => '$', 'flag' => 'fixture',
             ]);

@@ -8,6 +8,7 @@ use App\Events\OneDayLeftEvent;
 use App\Events\UnreadTicketEvent;
 use App\Models\Group;
 use App\Models\Ticket;
+use App\Services\TestCheckout;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -22,6 +23,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->call(fn () => app(TestCheckout::class)->sweepExpired())
+            ->everyMinute()->when(fn () => app(TestCheckout::class)->available())
+            ->description('Expire synthetic checkout holds');
         // $schedule->command('inspire')->hourly();
         $schedule->call(function () {
             Ticket::where('status', '=', TicketStatusEnum::pending)->each(function ($item) {

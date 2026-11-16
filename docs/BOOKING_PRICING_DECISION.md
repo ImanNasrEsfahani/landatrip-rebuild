@@ -1,5 +1,7 @@
 # Booking pricing decision required before staging checkout
 
+Phase 5 adds an isolated synthetic checkout contract and fake provider for verification. See [PHASE5_TEST_CHECKOUT.md](PHASE5_TEST_CHECKOUT.md). The decisions below are still required before live checkout can be activated.
+
 ## Evidence from merged main
 
 - `tours.price` and `groups.price` are commented out in their migrations; the old `TourController::booking` reads the absent `groups.price`, selects the latest group instead of the requested one, multiplies by `51000`, assigns invoice `user_id = 1`, and sends a gateway request.

@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->string('participant_category')->nullable();
         });
         Schema::table('invoices', function (Blueprint $table) {
+            $table->unique('id');
             foreach (['subtotal', 'discount', 'tax', 'total'] as $field) {
                 $table->decimal($field, 12, 2)->change();
             }
@@ -59,6 +60,7 @@ return new class extends Migration {
             $table->double('price')->change();
         });
         Schema::table('invoices', function (Blueprint $table) {
+            $table->dropUnique('invoices_id_unique');
             $table->dropColumn(['pricing_version', 'pricing_snapshot', 'hold_expires_at', 'checkout_key', 'checkout_fingerprint']);
             foreach (['subtotal', 'discount', 'tax', 'total'] as $field) {
                 $table->double($field)->change();

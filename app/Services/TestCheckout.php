@@ -10,12 +10,17 @@ class TestCheckout
 {
     public function guard(): void
     {
-        abort_unless(config('booking_test.enabled') === true
+        abort_unless($this->available(), 409, 'Test checkout is unavailable.');
+    }
+
+    public function available(): bool
+    {
+        return config('booking_test.enabled') === true
             && config('booking_test.gateway') === 'fake'
             && app()->environment(['local', 'testing'])
             && config('database.default') === 'mysql'
             && config('database.connections.mysql.database') === 'landatrip_e2e'
-            && config('booking_test.hold_minutes') > 0, 409, 'Test checkout is unavailable.');
+            && config('booking_test.hold_minutes') > 0;
     }
 
     private function minor(string $amount): int
@@ -112,6 +117,20 @@ class TestCheckout
             DB::table('transactions')->where('invoice_id', $hold->invoice_id)->where('status', 0)
                 ->update(['status' => 1, 'updated_at' => now()]);
         }
+    }
+
+    public function sweepExpired(): int
+    {
+        $this->guard();
+        $groupIds = DB::table('booking_holds')->where('status', 'active')
+            ->where('expires_at', '<=', now())->distinct()->pluck('group_id');
+        foreach ($groupIds as $groupId) {
+            DB::transaction(function () use ($groupId) {
+                DB::table('groups')->where('id', $groupId)->lockForUpdate()->first();
+                $this->expireGroup($groupId);
+            });
+        }
+        return $groupIds->count();
     }
 
     public function create(string $groupId, string $userId, array $selection, string $key): array
@@ -238,9 +257,10 @@ class TestCheckout
         DB::transaction(function () use ($id) {
             $hold = DB::table('booking_holds')->where('invoice_id', $id)->first();
             abort_unless($hold?->status === 'active', 409);
+            DB::table('groups')->where('id', $hold->group_id)->lockForUpdate()->first();
             DB::table('booking_holds')->where('id', $hold->id)->update(['expires_at' => now()->subSecond()]);
-            $this->expireGroup($hold->group_id);
         });
+        $this->sweepExpired();
         return $this->invoice($id, $userId);
     }
 }
