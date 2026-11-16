@@ -11,5 +11,5 @@ export function route(name, params = {}) {
     }
 
     console.log(result, "helper.js");
-    return import.meta.env.VITE_APP_URL + "/" + result.uri;
+    return (import.meta.env.VITE_APP_URL || window.location.origin) + "/" + result.uri;
 }

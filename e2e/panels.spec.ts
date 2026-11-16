@@ -10,6 +10,15 @@ for (const role of roles) {
     await expect(page).toHaveURL(new RegExp(`/${role}-panel(?:/|$)`));
     await expect(page.locator('#app')).not.toBeEmpty();
     await page.waitForTimeout(500);
+    if (role === 'admin') {
+      await expect(page.getByRole('heading', { name: 'Admin panel' })).toBeVisible();
+      await page.getByRole('link', { name: 'Create ticket' }).click();
+      await expect(page.getByText('Create a new ticket')).toBeVisible();
+      await expect(page.locator('input[name="title"]')).toBeVisible();
+      await expect(page.locator('textarea[name="message"]')).toBeVisible();
+      await page.screenshot({ path: 'test-results/admin-ticket-form.png', fullPage: true });
+      await page.goto('/admin-panel');
+    }
     expect(pageErrors).toEqual([]);
     await page.screenshot({ path: `test-results/${role}-panel.png`, fullPage: true });
     await page.reload();

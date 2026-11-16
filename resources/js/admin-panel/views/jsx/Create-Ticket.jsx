@@ -20,7 +20,7 @@ const Control = ({ children, ...props }) => {
 };
 const IconSingleValue = (props) => (
     <SingleValue {...props} className="bg-gray rounded-2 border-1 border-dark py-1 px-2 m-1" >
-        <img src={`${import.meta.env.VITE_ASSET_URL + "/public/users/profile/${props.data.profile"}`} style={{ height: '30px', width: '30px', borderRadius: '50%', marginRight: '10px' }}/>
+        <img src={`/storage/users/profile/${props.data.profile}`} style={{ height: '30px', width: '30px', borderRadius: '50%', marginRight: '10px' }}/>
         {props.data.short_label}
         <button className="border-0 bg-gray" onClick={props.clearValue}><i className="fa-solid fa-x fa-2xs"></i></button>
     </SingleValue>
@@ -28,7 +28,7 @@ const IconSingleValue = (props) => (
 
 const IconOption = (props) =>(
     <Option {...props}>
-        <img src={`${import.meta.env.VITE_ASSET_URL+"/public/users/profile/${props.data.profile"}`}  style={{ height: '30px', width: '30px', borderRadius: '50%', marginRight: '10px' }}/>
+        <img src={`/storage/users/profile/${props.data.profile}`}  style={{ height: '30px', width: '30px', borderRadius: '50%', marginRight: '10px' }}/>
         {props.data.label}
     </Option>
 );
