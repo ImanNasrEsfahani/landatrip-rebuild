@@ -283,6 +283,5 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 *.zip
-composer.lock
 package-lock.json
 
