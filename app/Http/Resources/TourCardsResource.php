@@ -24,7 +24,9 @@ class TourCardsResource extends JsonResource
             "slug"                  => $this->slug,
             "start_date"            => $this->start_date_tour->format('d M'),
             "public"                => $this->public ? "Public" : "privet",
-            "thumbnailImage"        => Storage::url("groups/thumbnails/". $this->thumbnailImage->url),
+            "thumbnailImage"        => $this->thumbnailImage
+                ? Storage::url("groups/thumbnails/". $this->thumbnailImage->url)
+                : Storage::url('website/tours/tour.png'),
             "max_capacity"          => $this->max_capacity,
             "end_registration_date" => $this->end_registration_date->diffInDays(),
             "booked_user_count"     => GroupUser::where("group_id", "=", $this->id)->where("status", "=", GroupUserStatusEnum::booked)->count(),

@@ -22,16 +22,15 @@ export default function SidebarHeader() {
              className="sidebar-header bg-gray-light text-white border-0 overflow-hidden text-center mb-2">
             <div className="w-90 mx-auto border border-1 border-orange m-4 p-3 rounded-4 profile">
                 <div>
-                    <img className="rounded-4" height="90px" width="90px" src={`${import.meta.env.VITE_ASSET_URL + "/public/user/profile/${data.profile_picture"}`} alt={data.profile_alt}/>
+                    {data.profile_picture && <img className="rounded-4" height="90px" width="90px" src={`/storage/users/profile/${data.profile_picture}`} alt={data.profile_alt || 'Admin profile'}/>}
                 </div>
-                <div className="fs-1 text-center mt-2">
-                    <p className="m-1">{data.title}</p>
-                    <p className="m-1 overflow-hidden">{data.email}</p>
-                    <p className="m-1">{data.location}</p>
+                <div className="fs-6 text-center mt-2 text-break">
+                    <p className="m-1">{[data.firstName, data.lastName].filter(Boolean).join(' ')}</p>
+                    <p className="m-1">{data.email}</p>
                 </div>
             </div>
             <div className="menu-bottun d-flex flex-column-reverse flex-md-row justify-content-between px-3 mb-2">
-                <Link to="/teacher-panel" className="text-white text-decoration-none align-self-center">
+                <Link to="/admin-panel" className="text-white text-decoration-none align-self-center">
                     <i className="text-white opacity-90 fs-3 fa-solid fa-house"/>
                     <span className='text fs-2 ms-3'>Dashboard</span>
                 </Link>

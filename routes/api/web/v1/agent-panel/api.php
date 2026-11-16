@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Agent panel
-Route::middleware('auth:sanctum')->name("api.web.v1.agent-panel.")->group(function () {
+Route::middleware(['auth:sanctum', 'panel.role:agent'])->name("api.web.v1.agent-panel.")->group(function () {
     Route::get("agent-info",[AgentController::class,"userInfo"])->name("agent-info");
     Route::get("agent-info-header",[AgentController::class,"index"])->name("agent-info-header");
 });

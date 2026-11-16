@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //User
-Route::middleware('auth:sanctum')->name("api.web.v1.user-panel.")->group(function () {
+Route::middleware(['auth:sanctum', 'panel.role:user'])->name("api.web.v1.user-panel.")->group(function () {
 
     Route::get("user-info", [UserController::class, "userInfo"])->name("user-general-info");
 

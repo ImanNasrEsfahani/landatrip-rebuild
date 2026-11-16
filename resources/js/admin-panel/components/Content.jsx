@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./Content.scss";
 import CreatTicket from "../views/jsx/Create-Ticket";
 import UnassignedTickets from "../views/jsx/Unassigned-Tickets";
@@ -32,7 +32,12 @@ export default function Content(props) {
         <div className="main-content w-100 position-relative p-4">
             <Routes>
                 <Route path="admin-panel">
-                    {/*<Route exact path="" element={<Dashboard />} />*/}
+                    <Route index element={<div className="bg-white rounded-4 p-4">
+                        <h1 className="h4">Admin panel</h1>
+                        <p>Manage support tickets and group members.</p>
+                        <Link to="/admin-panel/tickets/new-tickets">Create ticket</Link>
+                        <Link className="ms-4" to="/admin-panel/tickets/unassigned">Unassigned tickets</Link>
+                    </div>} />
                     <Route path="tickets/new-tickets" element={<CreatTicket />} />
                     <Route path="tickets/unassigned" element={<UnassignedTickets />} />
                     <Route path="tickets/open-tickets" element={<OpenTickets />} />

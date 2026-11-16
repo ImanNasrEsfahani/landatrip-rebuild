@@ -16,6 +16,10 @@ Tags: one-column, custom-colors, custom-menu, custom-logo, editor-style, feature
 
 @import 'react-toastify/dist/ReactToastify.css';
 
+.bg-gray-light {
+    background-color: #4b535c !important;
+}
+
 .vl {
     border-left: 0.2rem solid white;
 }

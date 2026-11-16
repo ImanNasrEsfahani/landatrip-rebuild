@@ -73,13 +73,13 @@ export default function AgentLogo() {
                         <a className="btn bg-transparent border-0 dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         <img className="rounded-pill max-w-2rem"
-                             src={import.meta.env.VITE_ASSET_URL + `/public/users/profile/${data.data.profile_picture}`}
+                             src={`/storage/users/profile/${data.data.profile_picture}`}
                              alt={data.data.profile_alt} />
                         <span className="text-white mx-1">{data.data.firstName} {data.data.lastName}</span>
                     </a>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                             <li className="d-flex justify-content-center">
-                                <a href={ route("profile.show", {user: data.data.slug})} className="mb-3 text-decoration-none text-orange"><i className="fa-solid fa-id-card text-green me-2 fs-4"></i>Profile page</a>
+                                <a href={ route("profile", {user: data.data.slug})} className="mb-3 text-decoration-none text-orange"><i className="fa-solid fa-id-card text-green me-2 fs-4"></i>Profile page</a>
                             </li>
                             <li className="d-flex justify-content-center"><a href={("wallet")} className="text-decoration-none row"><i className="fa-solid fa-wallet text-green me-2 fs-4 col p-0"></i><p className="text-orange col p-0">Wallet</p></a></li>
                             <li className="border-bottom border-1 text-center">{data.data.USD > 0 ? <div className="text-green">{data.data.USD} <span className="text-dark">USD</span></div> : <></>}</li>

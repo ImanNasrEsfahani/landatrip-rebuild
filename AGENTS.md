@@ -1,9 +1,17 @@
 # LandaTrip Modernization Instructions
 
-## Current frontend scope
+## Current staging and E2E scope
+
+- Laravel PR #1 and frontend PR #2 are merged into `main`. Phase 3 work lives on `feature/staging-e2e-testing`.
+- Use `bash scripts/e2e-run.sh` for a disposable MySQL 8 database, PHP 8.4, locked dependencies, built assets, and Chromium tests. It generates temporary credentials in process memory and leaves the isolated application on `http://127.0.0.1:8000`.
+- `E2eSeeder` rejects databases other than `landatrip_e2e`. Never seed customer data or call payment, booking, SMS, email, or other production providers from E2E tests.
+- See `docs/STAGING_READINESS.md`, `docs/E2E_TEST_MATRIX.md`, `docs/E2E_EXECUTION_REPORT.md`, `docs/KNOWN_ISSUES.md`, and `docs/STAGING_DEPLOYMENT_GUIDE.md` for the current evidence and remaining work.
+- Do not merge the staging PR automatically.
+
+## Historical frontend scope
 
 - The Laravel 13 migration is complete and merged at `01af613`; keep PHP, Laravel, and database versions unchanged.
-- Frontend modernization is isolated on `feature/frontend-modernization` and must preserve every route, layout, form, API contract, stylesheet, and application panel.
+- Frontend modernization was merged through PR #2; preserve every route, layout, form, API contract, stylesheet, and application panel.
 - Use the committed `package-lock.json`, plain `npm ci`, and `npm run test:frontend` for reproducible verification.
 - Do not merge the frontend pull request automatically.
 

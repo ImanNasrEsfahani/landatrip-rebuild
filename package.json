@@ -6,17 +6,21 @@
         "build:ssr": "vite build --ssr",
         "audit": "npm audit --audit-level=high",
         "verify:manifest": "node scripts/verify-vite-manifest.mjs",
-        "test:frontend": "npm run build && npm run verify:manifest && npm run build:ssr"
+        "test:frontend": "npm run build && npm run verify:manifest && npm run build:ssr",
+        "test:e2e": "playwright test",
+        "test:e2e:report": "playwright show-report"
     },
     "engines": {
         "node": "^20.19.0 || >=22.12.0"
     },
     "devDependencies": {
+        "@playwright/test": "^1.65.1",
         "autoprefixer": "^10.6.2",
         "daisyui": "^3.9.4",
         "laravel-vite-plugin": "^2.1.0",
         "postcss": "^8.5.33",
         "tailwindcss": "^3.4.19",
+        "typescript": "^5.9.3",
         "vite": "^7.3.8"
     },
     "dependencies": {
@@ -47,6 +51,7 @@
         "animate.css": "^4.1.1",
         "apexcharts": "^3.54.1",
         "axios": "^1.21.1",
+        "bootstrap": "^5.3.9",
         "country-flag-icons": "^1.5.5",
         "dotenv": "^16.0.3",
         "emoji-mart": "^5.5.2",

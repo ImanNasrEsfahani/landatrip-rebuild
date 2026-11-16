@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Enums\GroupStatusEnum;
+use App\Enums\InvoiceStatusEnum;
 use App\Enums\TransactionStatusEnum;
 use App\Events\FailsPaymentEvent;
 use App\Events\SuccessPaymentEvent;
@@ -19,7 +20,7 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Shetabit\Multipay\Invoice as ZarinPalInvoice;
 use Shetabit\Payment\Facade\Payment;
 
@@ -161,17 +162,36 @@ class TourController extends Controller
      */
     public function verification(StorePaymentVerifyRequest $request): mixed
     {
-        $transactionObj = Transaction::where('authority', '=', $request->validated('Authority'))->firstOrFail();
-        if(!$transactionObj) Log::critical("Transaction is not found in db with authority = " . $request->validated('Authority'));
+        [$transactionObj, $completed, $changed] = DB::transaction(function () use ($request) {
+            $transaction = Transaction::where('authority', $request->validated('Authority'))
+                ->lockForUpdate()->firstOrFail();
 
-        $transactionObj->update([ "status" =>  $request->validated('Status') === "OK" ? TransactionStatusEnum::completed : TransactionStatusEnum::failed ]);
+            if ($transaction->status->value !== TransactionStatusEnum::pending) {
+                return [$transaction, $transaction->status->value === TransactionStatusEnum::completed, false];
+            }
 
-        if ($transactionObj === TransactionStatusEnum::completed) {
-           SuccessPaymentEvent::dispatch($transactionObj);
-           return view("payment-result.payment-successful");
+            if ($request->validated('Status') !== 'OK') {
+                $transaction->update(['status' => TransactionStatusEnum::failed]);
+                return [$transaction, false, true];
+            }
+
+            Payment::amount((int) $transaction->invoice->total)
+                ->transactionId($transaction->authority)
+                ->verify();
+            $transaction->update(['status' => TransactionStatusEnum::completed]);
+            $transaction->invoice->update(['status' => InvoiceStatusEnum::paid]);
+
+            return [$transaction, true, true];
+        });
+
+        if ($changed) {
+            if ($completed) {
+                SuccessPaymentEvent::dispatch($transactionObj);
+            } else {
+                FailsPaymentEvent::dispatch($transactionObj);
+            }
         }
 
-        FailsPaymentEvent::dispatch($transactionObj);
-        return view("payment-result.payment-failure");
+        return view($completed ? 'payment-result.payment-successful' : 'payment-result.payment-failure');
     }
 }

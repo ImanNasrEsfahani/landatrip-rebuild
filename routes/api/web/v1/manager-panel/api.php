@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::middleware('auth:sanctum')->name("api.web.v1.manager-panel.")->group(function () {
+Route::middleware(['auth:sanctum', 'panel.role:manager'])->name("api.web.v1.manager-panel.")->group(function () {
 
     // Manager Panel
     Route::prefix('manager-panel')->group(function () {

@@ -1,0 +1,52 @@
+name: landatrip-e2e
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: e2e-root-only
+      MYSQL_DATABASE: landatrip_e2e
+      MYSQL_USER: landatrip_e2e
+      MYSQL_PASSWORD: e2e-only
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: [CMD-SHELL, "mysqladmin ping -h 127.0.0.1 -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/e2e/Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./.env.e2e:/app/.env:ro
+    ports:
+      - 127.0.0.1:8000:8000
+    environment:
+      APP_ENV: local
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1:8000
+      APP_KEY: ${E2E_APP_KEY:?Set E2E_APP_KEY to a generated key}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: landatrip_e2e
+      DB_USERNAME: landatrip_e2e
+      DB_PASSWORD: e2e-only
+      CACHE_STORE: array
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      SCOUT_DRIVER: 'null'
+      FILESYSTEM_DISK: local
+      BROADCAST_CONNECTION: log
+      TEST_ENABLED: 'false'
+      E2E_TEST_PASSWORD: ${E2E_TEST_PASSWORD:?Set E2E_TEST_PASSWORD to a temporary value}
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    depends_on:
+      mysql:
+        condition: service_healthy

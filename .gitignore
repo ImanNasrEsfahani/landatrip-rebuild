@@ -19,6 +19,9 @@ storage/app/livewire-tmp/*
 
 .env
 .env.*
+!.env.testing.example
+playwright-report/
+test-results/
 Homestead.yaml
 Homestead.json
 /.vagrant

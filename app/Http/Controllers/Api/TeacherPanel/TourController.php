@@ -91,7 +91,7 @@ class TourController extends Controller
      */
     public function show(Tour $tour)
     {
-        dd("asghar");
+        abort_unless(auth()->user()->tours()->whereKey($tour->getKey())->exists(), 403);
         return TeacherShowTourGroupResource::collection($tour->groups()->get());
     }
 

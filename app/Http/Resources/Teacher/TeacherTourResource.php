@@ -28,14 +28,12 @@ class TeacherTourResource extends JsonResource
      */
     public function toArray($request)
     {
-        $country = City::where("id", "=", $this->location_id)->first();
-
         return [
             "id"              => $this->id,
             "title"           => $this->title,
-            "location"        => $country->name,
+            "location"        => $this->city?->name,
             "total_group"     => $this->groups()->count(),
-            "confirmed_group" => $this->groups()->where("status", "=", GroupStatusEnum::booking)->count(),
+            "confirmed_group" => $this->groups()->where("status", "=", GroupStatusEnum::registration)->count(),
             "status"          => $this->status->description,
         ];
     }
