@@ -1,5 +1,12 @@
 # LandaTrip Modernization Instructions
 
+## Current frontend scope
+
+- The Laravel 13 migration is complete and merged at `01af613`; keep PHP, Laravel, and database versions unchanged.
+- Frontend modernization is isolated on `feature/frontend-modernization` and must preserve every route, layout, form, API contract, stylesheet, and application panel.
+- Use the committed `package-lock.json`, plain `npm ci`, and `npm run test:frontend` for reproducible verification.
+- Do not merge the frontend pull request automatically.
+
 ## Scope
 
 Upgrade Laravel incrementally through verified Laravel 11, 12, and 13 checkpoints. Preserve the existing Laravel 10 application structure and all business functionality, routes, mobile API v1 endpoints, Sanctum authentication, panels, integrations, database structures, and React UI.
@@ -24,8 +31,9 @@ Upgrade Laravel incrementally through verified Laravel 11, 12, and 13 checkpoint
 - Laravel 12 checkpoint: `6801dd68`.
 - Laravel 13 is verified on PHP 8.4.27 with 342 routes, 98 successful migrations, and 20 passing tests. See `docs/MIGRATION_STATUS.md` for exact versions and remaining staging checks.
 
-## Out of scope
+## Historical Laravel migration scope
 
-- Do not upgrade React, Vite, Tailwind, or MySQL.
-- The existing case-sensitive frontend import mismatch (`tour` versus `Tour.tsx`) is not a Laravel regression.
+- React and Vite changes were intentionally excluded from the completed Laravel migration. They are now handled separately on the frontend modernization branch.
+- Tailwind and MySQL major upgrades remain out of scope.
+- The case-sensitive frontend import mismatch (`tour` versus `Tour.tsx`) was pre-existing and was fixed as the frontend baseline, not classified as a Laravel regression.
 

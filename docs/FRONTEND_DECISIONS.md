@@ -26,3 +26,27 @@ Last updated: 2026-11-15
 
 **Reason:** Vite 7 is outside the audited vulnerable ranges, supports the available Node 24 runtime, and avoids Vite 8's newer Rolldown/compiler-plugin requirements while still providing a current supported toolchain.
 
+## F-005 — Commit the npm lockfile
+
+**Decision:** Remove `package-lock.json` from `.gitignore` and commit the verified lockfile.
+
+**Reason:** The repository previously ignored its lockfile even though reproducible `npm ci` and dependency-cached CI require it. The committed lock resolves the historical React ApexCharts peer conflict without `--legacy-peer-deps`.
+
+## F-006 — Pin the compatible React ApexCharts wrapper
+
+**Decision:** Keep ApexCharts on the existing 3.x line and pin `react-apexcharts` to `1.4.1`.
+
+**Reason:** Later releases admitted by the old loose range require ApexCharts 4 or newer. Pinning the last compatible wrapper preserves chart behavior while making dependency installation deterministic.
+
+## F-007 — Verify bundle contracts instead of rewriting entries
+
+**Decision:** Add a manifest assertion for all 12 client entries and compile the existing Inertia SSR entry in CI.
+
+**Reason:** The application has multiple independent Blade and panel entry points. Explicit contract verification detects accidental bundle loss with less behavioral risk than consolidating or restructuring the frontend.
+
+## F-008 — Remove only dependencies proven unused
+
+**Decision:** Remove obsolete build plugins and UI packages only after confirming they have no active source imports; otherwise retain application dependencies even when newer majors exist.
+
+**Reason:** The goal is a secure, supported build path while preserving business behavior. Broad package churn without coverage would increase regression risk.
+
