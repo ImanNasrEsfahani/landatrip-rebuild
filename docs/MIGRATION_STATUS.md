@@ -73,6 +73,7 @@ Phase C (Laravel 13) — verified and committed as `63fef424`. Phase A is commit
 - Backend tests now call Laravel's `withoutVite()` helper, so clean CI checkouts do not require ignored frontend build artifacts. No React, Vite, Tailwind, or JavaScript dependency was changed.
 - Laravel bootstrapping remains `13.42.0`; route inventory remains 342 total, 207 API, and 49 mobile API v1 routes.
 - The local network still blocks Packagist's standalone Composer advisory endpoint with CONNECT tunnel HTTP 403. GitHub Actions successfully ran `composer audit --locked --abandoned=report` against Packagist with no security advisories; the already-documented abandoned Amadeus package remains a reported risk.
+- PR #1's clean GitHub-hosted Backend CI passes end to end on PHP 8.4 and MySQL 8, including dependency installation, platform checks, the Packagist audit, route inventory, migrations, and all 21 tests / 73 assertions.
 
 ## Phase C exact versions
 
@@ -151,5 +152,5 @@ Phase C (Laravel 13) — verified and committed as `63fef424`. Phase A is commit
 
 ## Exact next action
 
-Review Pull Request #1 and run the listed credentialed staging checks. Do not merge until those deployment risks are accepted or resolved.
+PR #1 is ready for owner review. Run the listed credentialed staging checks and accept or resolve the remaining deployment risks before merging.
 
