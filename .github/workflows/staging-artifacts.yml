@@ -17,10 +17,16 @@ jobs:
           cache: npm
       - name: Create isolated local staging configuration
         run: bash scripts/staging-local-init.sh
-      - name: Validate Compose and build commit images
+      - name: Validate staging Compose
+        run: docker compose --env-file .env.staging -f compose.staging.yml config --quiet
+      - name: Build and deploy commit images locally
         run: |
-          docker compose --env-file .env.staging -f compose.staging.yml config --quiet
-          STAGING_EDGE=local bash scripts/staging-deploy.sh
+          if ! STAGING_EDGE=local bash scripts/staging-deploy.sh > staging-deploy.log 2>&1; then
+            tail -40 staging-deploy.log
+            while IFS= read -r line; do printf '::error::%s\n' "$line"; done < <(tail -12 staging-deploy.log)
+            exit 1
+          fi
+          tail -20 staging-deploy.log
       - name: Add synthetic panel accounts
         run: bash scripts/staging-seed.sh
       - name: Verify image artifacts and PHP platform
