@@ -3,13 +3,13 @@ import * as React from 'react';
 import customTheme from '../../custom';
 import applePay from './assets/apple-pay.svg'
 import stripe from './assets/stripe.svg'
-import payPal from './assets/payPal.svg'
+import payPal from './assets/paypal.svg'
 import zarinpal from './assets/zarin.png'
 import wallet from './assets/wallet.svg'
 
 // const applePay = require("./assets/apple-pay.svg") as string;
-// const stripe = require('./assets/payPal.svg') as string;
-// const payPal = require('./assets/payPal.svg') as string;
+// const stripe = require('./assets/paypal.svg') as string;
+// const payPal = require('./assets/paypal.svg') as string;
 // const zarinpal = require('./assets/zarin.png') as string;
 // const wallet = require('./assets/zarin.png') as string;
 
