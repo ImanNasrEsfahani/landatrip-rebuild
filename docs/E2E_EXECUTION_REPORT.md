@@ -37,3 +37,17 @@ The HTML report and screenshots are local generated artifacts excluded from Git.
 4. Supply sandbox reCAPTCHA and test contact form validation and submission.
 5. Test teacher tour create/edit, user booking history, admin ticket submission, and file upload validation using disposable records and local fake storage.
 6. Review static tour listing data, third party assets, and remaining issues in `KNOWN_ISSUES.md` before exposing any staging URL.
+
+## Phase 3.5 local run, 16 November 2026
+
+The disposable MySQL database was rebuilt with the two new migrations (100 total), seeded with synthetic users, tour, group and a stored price item, and exercised with fake payment callbacks. PHP 8.4.27 and Laravel 13.42.0 registered 342 routes, including 49 mobile API v1 routes.
+
+| Gate | Result |
+| --- | --- |
+| Laravel backend | 29 passed, 120 assertions |
+| Frontend production build, manifest, SSR | Passed; 12 entry points including all five panels |
+| Chromium Playwright | 11 passed, one worker, no retries; five panels and mobile API v1 passed |
+| Booking safety | Selected group and registration checks; unpriced purchase returned 409 with no invoice or transaction |
+| Payment callback with fake gateway | Success, failure, repeated callback, second transaction on paid invoice, and provider error passed |
+
+A complete invoice and payment lifecycle was **not** verified because the price item schema does not define a payable amount. The required product decisions are in `BOOKING_PRICING_DECISION.md`. No real provider was called. CI results on the pull request must be checked before merge.
