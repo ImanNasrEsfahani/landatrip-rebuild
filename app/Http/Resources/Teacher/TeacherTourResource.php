@@ -33,7 +33,7 @@ class TeacherTourResource extends JsonResource
             "title"           => $this->title,
             "location"        => $this->city?->name,
             "total_group"     => $this->groups()->count(),
-            "confirmed_group" => $this->groups()->where("status", "=", GroupStatusEnum::booking)->count(),
+            "confirmed_group" => $this->groups()->where("status", "=", GroupStatusEnum::registration)->count(),
             "status"          => $this->status->description,
         ];
     }

@@ -28,18 +28,22 @@ EOF
 chmod 600 .env.e2e
 
 compose=(docker compose -f docker-compose.e2e.yml)
-"${compose[@]}" build app
-composer_args=()
-local_ca="${E2E_CA_BUNDLE:-/workspace/.cloud-setup/ca-bundle.pem}"
-if [[ -f "$local_ca" ]]; then
-  composer_args+=(-v "$local_ca:/tmp/e2e-ca.pem:ro" -e COMPOSER_CAFILE=/tmp/e2e-ca.pem -e SSL_CERT_FILE=/tmp/e2e-ca.pem)
+if [[ "${E2E_REUSE_DEPS:-0}" == 1 ]]; then
+  test -f vendor/autoload.php && test -d node_modules/@playwright/test && test -f public/build/manifest.json
+else
+  "${compose[@]}" build app
+  composer_args=()
+  local_ca="${E2E_CA_BUNDLE:-/workspace/.cloud-setup/ca-bundle.pem}"
+  if [[ -f "$local_ca" ]]; then
+    composer_args+=(-v "$local_ca:/tmp/e2e-ca.pem:ro" -e COMPOSER_CAFILE=/tmp/e2e-ca.pem -e SSL_CERT_FILE=/tmp/e2e-ca.pem)
+  fi
+  if [[ -d /workspace/.cloud-setup/composer-cache ]]; then
+    composer_args+=(-v /workspace/.cloud-setup/composer-cache:/tmp/composer-cache -e COMPOSER_CACHE_DIR=/tmp/composer-cache)
+  fi
+  "${compose[@]}" run --rm --no-deps "${composer_args[@]}" app composer install --no-interaction --prefer-dist --optimize-autoloader
+  npm ci
+  npm run build
 fi
-if [[ -d /workspace/.cloud-setup/composer-cache ]]; then
-  composer_args+=(-v /workspace/.cloud-setup/composer-cache:/tmp/composer-cache -e COMPOSER_CACHE_DIR=/tmp/composer-cache)
-fi
-"${compose[@]}" run --rm --no-deps "${composer_args[@]}" app composer install --no-interaction --prefer-dist --optimize-autoloader
-npm ci
-npm run build
 "${compose[@]}" up -d mysql
 "${compose[@]}" run --rm app php artisan migrate:fresh --force
 "${compose[@]}" run --rm app php artisan db:seed --class=E2eSeeder --force
@@ -56,4 +60,4 @@ if [[ -z "${E2E_CHROMIUM_PATH:-}" ]]; then
     npx playwright install chromium
   fi
 fi
-npm run test:e2e
+npm run test:e2e -- "$@"
