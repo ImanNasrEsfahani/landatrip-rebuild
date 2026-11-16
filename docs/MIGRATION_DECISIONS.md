@@ -68,3 +68,15 @@ Last updated: 2026-11-15
 
 **Reason:** Laravel 13 deprecates the framework `VerifyCsrfToken` and `ValidateCsrfToken` aliases. Keeping the application class name avoids restructuring the legacy kernel while enabling Laravel 13 request-origin protection.
 
+## D-012 — Make MySQL 8 the backend CI verification database
+
+**Decision:** Run the final CI gate on PHP 8.4 with a pinned `mysql:8.0` service, while retaining SQLite only as earlier checkpoint evidence.
+
+**Reason:** The production-shaped database engine catches grammar, index, and schema behavior that SQLite cannot. The CI database uses isolated test-only credentials, runs all migrations from scratch, seeds only required language fixtures, and never contacts production services.
+
+## D-013 — Assert stable routes and classify placeholders explicitly
+
+**Decision:** Replace the broad logging-only route test with explicit status and authentication contracts for stable endpoints, while checking known placeholder routes only for registration.
+
+**Reason:** A route sweep that always passes can conceal backend regressions. Conversely, asserting HTTP 200 for known incomplete routes would falsely certify them as functional.
+

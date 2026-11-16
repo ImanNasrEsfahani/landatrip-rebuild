@@ -63,6 +63,16 @@ Phase C (Laravel 13) — verified and committed as `63fef424`. Phase A is commit
 - Updated the tracked Docker and Sail definitions to PHP 8.4 and included the required HTTP/Raphf extensions. `docker compose config --quiet` passes (with expected warnings when local `.env` variables are absent).
 - A separate `composer audit --locked` retry cannot reach `https://packagist.org/api/security-advisories/` from this environment (CONNECT tunnel HTTP 403). The successful final `composer update` performed its integrated advisory check and reported no known advisories.
 
+## Final backend verification (2026-11-16)
+
+- Added `.github/workflows/backend-ci.yml` for PHP 8.4, Composer 2, the required HTTP/Raphf and database extensions, MySQL 8.0, platform validation, dependency auditing, route inventory checks, migrations, and the complete Laravel test suite.
+- Ran all 98 migrations against a disposable, tmpfs-backed MySQL `8.0.46` database. No production database, credentials, or customer data were used.
+- Seeded only the three language records required by the existing page controllers; the complete suite then passed on MySQL: 21 tests and 73 assertions.
+- Replaced `AllRoutesTest`'s unconditional assertions with explicit status contracts for 12 stable public endpoints, login redirects for all five protected panels, and registration-only checks for known placeholder routes.
+- Expanded mobile API v1 coverage to assert the complete 49-route inventory, the 34 Sanctum-protected / 15 public split, methods and middleware for nine critical endpoints, unauthenticated rejection, token persistence, and authenticated access.
+- Laravel bootstrapping remains `13.42.0`; route inventory remains 342 total, 207 API, and 49 mobile API v1 routes.
+- The local network still blocks Packagist's standalone Composer advisory endpoint with CONNECT tunnel HTTP 403. CI runs `composer audit --locked --abandoned=report` against Packagist; advisories fail the job while the already-documented abandoned Amadeus package is reported as a remaining risk.
+
 ## Phase C exact versions
 
 | Package | Version |
@@ -125,10 +135,11 @@ Phase C (Laravel 13) — verified and committed as `63fef424`. Phase A is commit
 
 - Composer 2.11 security blocking had to be bypassed for dependency resolution because the historical Laravel 11 line is covered by advisories. Composer reported five advisories affecting Laravel after installation. This exception applies only to the temporary Laravel 11 checkpoint; proceed directly to newer supported majors.
 - `phpunit.xml` sets `APP_ENV=production`, while the application's `HttpsProtocol` middleware redirects every non-`local` request. HTTP tests therefore require `APP_ENV=local` to exercise page content rather than the HTTPS redirect.
-- The existing `AllRoutesTest` logs but does not assert route response failures. It reports pre-existing 404/500 responses for some Laratrust, placeholder, blog, and mailable routes.
+- Known placeholder and incomplete routes (`test`, `test2`, `mailable`, `blog`, and Laratrust management pages) are asserted only as registered contracts; CI does not represent them as functionally healthy.
 - External booking/payment providers were not contacted; route registration and package compatibility are verified without production credentials.
 - Composer reports `amadeus4dev/amadeus-php` as abandoned with no suggested replacement. It remains installed to preserve the existing flight integration.
 - Composer reports pre-existing PSR-4 path/namespace mismatches in backup seeders and several request/resource/controller classes. Package discovery succeeds, but those classes need a separate compatibility review if exercised.
+- Several legacy event tests remain conditional no-ops when `TEST_ENABLED=false`; external SMS, mail, booking, and payment behavior still requires credentialed staging verification.
 
 ## Outstanding production verification
 

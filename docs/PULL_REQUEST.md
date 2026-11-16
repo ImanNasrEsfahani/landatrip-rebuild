@@ -26,6 +26,8 @@
 - Sanctum/mobile API regression suite: 2 tests, 8 assertions passed.
 - Complete suite: 20 tests, 26 assertions passed.
 - Docker Compose configuration: valid for the PHP 8.4 Sail runtime with HTTP/Raphf extensions.
+- Final MySQL verification: all 98 migrations passed on isolated MySQL 8.0.46; the strengthened suite passed 21 tests with 73 assertions.
+- Backend CI: PHP 8.4, Composer 2, required extensions, MySQL 8.0, route inventory, Composer audit, migrations, and the complete test suite.
 
 ## Reproduce
 
@@ -58,7 +60,8 @@ docker compose up -d
 
 - The abandoned `amadeus4dev/amadeus-php` package has no suggested replacement and remains to preserve the flight integration.
 - External booking, payment, Amadeus, Elasticsearch, Google Cloud Storage, SMS, and email integrations were not called without staging credentials.
-- The legacy `AllRoutesTest` logs several pre-existing 404/500 responses but does not assert them.
+- Known placeholder and incomplete routes remain registration-only checks and are not represented as functional endpoints.
+- Several legacy event tests remain conditional no-ops unless `TEST_ENABLED` is enabled; provider behavior requires staging verification.
 - Composer reports pre-existing PSR-4 mismatches in backup seeders and several application classes.
 - The frontend `tour` / `Tour.tsx` case-sensitive import issue predates and is separate from this backend upgrade.
 - Laravel 11 is a historical checkpoint covered by five advisories; the final Laravel 13 lock reports none.
