@@ -57,6 +57,7 @@ The following unused or obsolete packages were removed after source searches con
 - `npm audit --audit-level=high`: passes; the full audit reports 0 vulnerabilities across 447 dependencies.
 - `npm run test:frontend`: builds all production client bundles, validates all 12 manifest entries, and builds the Inertia SSR bundle.
 - Client manifest verification includes the admin, manager, teacher, agent, and user panels.
+- All six Laravel-generated React route manifests are committed; regenerating them with `php artisan generate:react-routes` produced byte-for-byte identical files before commit.
 - SSR output is generated as `bootstrap/ssr/ssr.mjs` with its SSR manifest.
 - Laravel 13 regression suite: 21 tests passed with 73 assertions using the prepared isolated SQLite fixture.
 - CI: `.github/workflows/frontend-ci.yml` runs Node 22.12, locked installation, security audit, client build, manifest contract verification, and SSR build on pull requests to `main`.
@@ -69,4 +70,5 @@ The following unused or obsolete packages were removed after source searches con
 - Teacher and user panel output chunks exceed 500 kB. Code splitting is a performance follow-up, not a correctness regression.
 - The repository has no component-level JavaScript test suite. Builds, entry-point contracts, SSR compilation, and Laravel integration tests are automated; manual browser smoke testing of authenticated workflows is still recommended before production deployment.
 - Payment, booking, uploads, WebSocket broadcasting, and third-party integrations require staging credentials and were not exercised against live services.
+- When Laravel routes change, run `php artisan generate:react-routes` and commit the resulting six frontend route manifests so clean builds and CI receive the same contracts.
 

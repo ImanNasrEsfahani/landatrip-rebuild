@@ -23,13 +23,6 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
-resources/js/user-panel/routes.json
-resources/js/teacher-panel/routes.json
-resources/js/manager-panel/routes.json
-resources/js/admin-panel/routes.json
-resources/js/agent-panel/routes.json
-resources/js/public/routes.json
-
 ### Node ###
 # Logs
 logs
