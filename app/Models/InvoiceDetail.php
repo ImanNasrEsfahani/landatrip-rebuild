@@ -45,6 +45,7 @@ class InvoiceDetail extends BaseModel
     protected $fillable = [
         'invoice_id',
         'tour_id',
+        'group_id',
         'count',
         'price'
     ];
@@ -62,6 +63,11 @@ class InvoiceDetail extends BaseModel
     public function tour(): BelongsTo
     {
         return $this->belongsTo(Tour::class);
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
     }
 
     /**

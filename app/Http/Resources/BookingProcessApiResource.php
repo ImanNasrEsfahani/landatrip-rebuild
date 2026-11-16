@@ -18,6 +18,7 @@ class BookingProcessApiResource extends JsonResource
     {
 //        dd($this->users->count());
         return [
+            "id"              => $this->id,
             "tour_title"      => $this->tour->title,
             "group_title"     => $this->title,
             "destination"     => $this->tour->city()->first()->name . ", " . $this->tour->city->country()->first()->name,
@@ -27,6 +28,17 @@ class BookingProcessApiResource extends JsonResource
             "days"            => $this->days,
             "nights"          => $this->nights,
             "capacity"        => $this->max_capacity - $this->users->count(),
+            "registration_open" => $this->status->value === \App\Enums\GroupStatusEnum::registration
+                && now()->toDateString() >= $this->start_registration_date
+                && now()->toDateString() <= $this->end_registration_date
+                && $this->users->count() < $this->max_capacity,
+            "price_items" => $this->priceItems->map(fn ($item) => [
+                'id' => $item->id,
+                'title' => $item->title,
+                'amount' => $item->amount,
+                'currency' => $item->currency?->name,
+                'symbol' => $item->currency?->symbol,
+            ]),
         ];
     }
 }

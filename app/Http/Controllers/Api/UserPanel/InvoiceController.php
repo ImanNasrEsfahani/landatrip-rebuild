@@ -50,6 +50,7 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice): UserInvoiceResource
     {
+        abort_unless($invoice->user_id === auth()->id(), 404);
         return new UserInvoiceResource($invoice);
     }
 

@@ -67,10 +67,37 @@ test('booking step one loads the seeded tour and group', async ({ page }) => {
   await expect(page.locator('#booking-tour')).toHaveAttribute('tour_slug', 'e2e-sample-tour');
   await expect(page.locator('#booking-tour')).toHaveAttribute('group_slug', 'e2e-sample-group');
   await expect(page.getByText('Trip info')).toBeVisible();
-  await expect(page.getByText('E2E Sample Tour')).toBeVisible();
+  await expect(page.getByText('E2E Sample Tour', { exact: true })).toBeVisible();
   await waitForPublicPaint(page);
   await page.screenshot({ path: 'test-results/booking-step1.png', fullPage: true });
   expect(errors).toEqual([]);
+});
+
+test('stored group price is shown without an invented invoice or gateway charge', async ({ page }) => {
+  await login(page, 'user');
+  const availability = await page.request.get('/api/booking/tour/e2e-sample-tour/group/e2e-sample-group');
+  expect(availability.status()).toBe(200);
+  const group = (await availability.json()).data;
+  expect(group.registration_open).toBe(true);
+  expect(group.price_items).toEqual([expect.objectContaining({ title: 'Sample stored item', amount: 125, currency: 'USD' })]);
+
+  await page.goto('/tour/e2e-sample-tour/group/e2e-sample-group/step1');
+  await expect(page.locator('p:visible').filter({ hasText: 'Sample stored item' }).first()).toBeVisible();
+  await expect(page.locator('p:visible').filter({ hasText: /payable total is unavailable/i }).first()).toBeVisible();
+
+  const apiLogin = await page.request.post('/api/app/v1/login', {
+    data: { email: 'e2e-user@example.invalid', password: process.env.E2E_TEST_PASSWORD },
+    headers: { Accept: 'application/json' },
+  });
+  expect(apiLogin.status()).toBe(200);
+  const headers = { Accept: 'application/json', Authorization: `Bearer ${(await apiLogin.json()).token}` };
+  const invoiceBefore = await page.request.get('/api/web/v1/user-panel/invoices', { headers });
+  expect(invoiceBefore.status()).toBe(200);
+  const attempt = await page.request.get(`/tour/e2e-sample-tour/tour-operation/${group.id}/booking`);
+  expect(attempt.status()).toBe(409);
+  const invoiceAfter = await page.request.get('/api/web/v1/user-panel/invoices', { headers });
+  expect(invoiceAfter.status()).toBe(200);
+  expect((await invoiceAfter.json()).data).toEqual((await invoiceBefore.json()).data);
 });
 
 test('mobile layout and contact form render', async ({ page }) => {

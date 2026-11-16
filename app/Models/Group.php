@@ -166,6 +166,11 @@ class Group extends BaseModel
         return $this->hasMany(GroupPost::class);
     }
 
+    public function priceItems(): HasMany
+    {
+        return $this->hasMany(GroupPriceItem::class);
+    }
+
     /**
      * @return HasMany
      */

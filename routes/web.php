@@ -155,7 +155,7 @@ Route::resource('tour', TourController::class)->only('index');
 Route::resource('tour', TourController::class)->only('show');
 Route::resource('tour/{tour:slug}/comment', TourCommentController::class)->only('store')->middleware('auth');
 
-Route::get('/tour/{slug}/tour-operation/{id}/booking', [TourController::class, 'booking'])->name('tour-booking');
+Route::get('/tour/{slug}/tour-operation/{id}/booking', [TourController::class, 'booking'])->middleware(['auth', 'verified'])->name('tour-booking');
 
 // Payment
 Route::get('/payment/verify', [TourController::class, 'verification'])->name('verification');
