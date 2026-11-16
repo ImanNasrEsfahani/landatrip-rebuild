@@ -39,6 +39,6 @@
         @include('footer.footer')
 
         @viteReactRefresh
-        @vite(['resources/scss.scss', 'resources/js.js'])
+        @vite(['resources/scss/public.scss', 'resources/js/public.js'])
     </body>
 </html>

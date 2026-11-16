@@ -96,7 +96,7 @@ export default function UserLogo() {
 
                     <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li className="d-flex justify-content-center">
-                            <a href={ route("profile.show", {user: data.slug})} className="text-decoration-none">Profile page</a>
+                            <a href={ route("profile", {user: data.slug})} className="text-decoration-none">Profile page</a>
                         </li>
                         <li className="d-flex justify-content-center"><i className="fa-solid fa-wallet text-green me-2 fs-4"></i>
                             <p className="">Wallet</p>

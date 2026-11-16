@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //َAdmin
-Route::middleware('auth:sanctum')->name("api.web.v1.admin-panel.")->group(function () {
+Route::middleware(['auth:sanctum', 'panel.role:admin'])->name("api.web.v1.admin-panel.")->group(function () {
 
     Route::get("user-info", [UserController::class, "userInfo"])->name("user-general-info");
 

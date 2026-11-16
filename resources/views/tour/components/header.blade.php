@@ -10,7 +10,7 @@
 <header class="lg:m-5">
     <div class="relative h-[95vh]">
         <div class="absolute -z-10 h-full w-full lg:max-w-full p-5 lg:rounded-2xl bg-cover bg-center bg-no-repeat"
-             style="background-image: url({{ Storage::url('/courses/header/'. $tour->headerImage->url)  }})"></div>
+             style="background-image: url({{ $tour->headerImage ? Storage::url('/courses/header/'. $tour->headerImage->url) : Storage::url('/website/tours/tour-header.png') }})"></div>
         <div class="hidden md:block absolute top-[40%] left-[50%] overflow-x-hidden bg-white bg-opacity-80 backdrop-blur p-5 rounded-3xl text-center w-9/12 lg:w-auto"
              style="transform: translate(-50%, -50%)">
             <p class="text-4xl font-bold mb-5 leading-normal">{{$tour->title}}</p>

@@ -1,11 +1,11 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import $ from "jquery";
 
 import "../scss/agent-panel.scss";
 
 console.log("salam agent panel js");
 
-$(function () {$('.accordion-button, .menu-item').tooltip('toggleEnabled');});
-$(function () { $('.accordion-button, .menu-item, .nav-link').tooltip('hide');});
 
 $(document).ready(function () {
     console.log("menu");
@@ -14,7 +14,6 @@ $(document).ready(function () {
         $('#sidebar').toggleClass('active');
         $('#content').toggleClass('active');
         $('#sidebar-header').toggleClass('active');
-        $('.accordion-button, .menu-item').tooltip('toggleEnabled');
     });
 
     $('.more-button,.body-overlay').on('click', function () {

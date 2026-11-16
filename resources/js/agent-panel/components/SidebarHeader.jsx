@@ -21,7 +21,7 @@ export default function SidebarHeader(){
                 <div id="sidebar-header" className="sidebar-header bg-deep-sea-green text-white border-0 overflow-hidden mt-2 mb-2">
                     <div className="w-90 mx-auto border border-orange rounded-3 mb-4 row">
                         <div className="col-12 mt-2">
-                            <img src={import.meta.env.VITE_ASSET_URL + `/public/users/profile/${SidebarHeaderInfo.data.data.profileImage.url}`} className="w-100 rounded-3"/>
+                            <img src={`/storage/users/profile/${SidebarHeaderInfo.data.data.profileImage?.url ?? 'male.png'}`} className="w-100 rounded-3" alt="Agent profile"/>
                         </div>
                         <div className="col-12 p-0">
                             <p className="fs-3 fw-bold mt-2">Travel Agency</p>

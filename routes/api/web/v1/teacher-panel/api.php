@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Teacher panel
-Route::middleware('auth:sanctum')->name("api.web.v1.teacher-panel.")->group(function () {
+Route::middleware(['auth:sanctum', 'panel.role:teacher'])->name("api.web.v1.teacher-panel.")->group(function () {
 
     Route::get("user-info", [UserController::class, "userInfo"])->name("user-general-info");
 

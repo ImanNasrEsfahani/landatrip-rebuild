@@ -17,9 +17,9 @@ class TeacherShowTourGroupResource extends JsonResource
         return [
             "id"    =>  $this->id,
             "title" =>  $this->title,
-            "location"  =>  $this->tour()->location_id,
+            "location"  =>  $this->tour?->city?->name,
             "public"    =>  $this->public,
-            "image"     =>  $this->thumbnailImage()->url,
+            "image"     =>  $this->thumbnailImage?->url,
 
         ];
     }
