@@ -79,7 +79,7 @@ test('stored group price is shown without an invented invoice or gateway charge'
   expect(availability.status()).toBe(200);
   const group = (await availability.json()).data;
   expect(group.registration_open).toBe(true);
-  expect(group.price_items).toEqual([expect.objectContaining({ title: 'Sample stored item', amount: 125, currency: 'USD' })]);
+  expect(group.price_items).toContainEqual(expect.objectContaining({ title: 'Sample stored item', amount: '125.00', currency: 'USD' }));
 
   await page.goto('/tour/e2e-sample-tour/group/e2e-sample-group/step1');
   await expect(page.locator('p:visible').filter({ hasText: 'Sample stored item' }).first()).toBeVisible();

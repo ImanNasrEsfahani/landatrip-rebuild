@@ -24,12 +24,15 @@ MAIL_MAILER=array
 SCOUT_DRIVER=null
 FILESYSTEM_DISK=local
 TEST_ENABLED=false
+BOOKING_TEST_CHECKOUT_ENABLED=true
+BOOKING_TEST_GATEWAY=fake
+BOOKING_TEST_HOLD_MINUTES=15
 EOF
 chmod 600 .env.e2e
 
 compose=(docker compose -f docker-compose.e2e.yml)
 if [[ "${E2E_REUSE_DEPS:-0}" == 1 ]]; then
-  test -f vendor/autoload.php && test -d node_modules/@playwright/test && test -f public/build/manifest.json
+  test -f vendor/autoload.php && test -d node_modules/@playwright/test
 else
   "${compose[@]}" build app
   composer_args=()
@@ -42,8 +45,8 @@ else
   fi
   "${compose[@]}" run --rm --no-deps "${composer_args[@]}" app composer install --no-interaction --prefer-dist --optimize-autoloader
   npm ci
-  npm run build
 fi
+npm run build
 "${compose[@]}" up -d mysql
 "${compose[@]}" run --rm app php artisan migrate:fresh --force
 "${compose[@]}" run --rm app php artisan db:seed --class=E2eSeeder --force

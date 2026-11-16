@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\APIFileUploadController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\TestCheckoutController;
 use App\Http\Controllers\Api\UserFollowController;
 use App\Http\Controllers\Api\UserGroupPostController;
 use App\Http\Controllers\Api\UserPostCommentLikeController;
@@ -38,6 +39,16 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::name("api.public.")->group(function () {
+
+    // All handlers enforce the disposable MySQL database, explicit fixture flag, and fake gateway.
+    Route::post('__e2e/checkout/callback', [TestCheckoutController::class, 'callback']);
+    Route::middleware('auth:sanctum')->prefix('__e2e/checkout')->group(function () {
+        Route::post('groups/{group}/quote', [TestCheckoutController::class, 'quote']);
+        Route::post('groups/{group}/invoices', [TestCheckoutController::class, 'create']);
+        Route::get('invoices/{invoice}', [TestCheckoutController::class, 'show']);
+        Route::post('invoices/{invoice}/initiate', [TestCheckoutController::class, 'initiate']);
+        Route::post('invoices/{invoice}/expire-for-test', [TestCheckoutController::class, 'expire']);
+    });
 
     Route::apiResource('card/tour',TourCardsController::class)->only('show');
 
