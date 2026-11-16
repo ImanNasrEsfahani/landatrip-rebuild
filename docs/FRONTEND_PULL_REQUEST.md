@@ -19,6 +19,7 @@ This pull request modernizes the LandaTrip frontend build and React integration 
 - `npm audit --audit-level=high` — passed; full audit reports 0 known vulnerabilities across 447 dependencies.
 - `npm run test:frontend` — passed: client production build, 12 expected manifest entries, all five application panels, and Inertia SSR build.
 - Laravel integration suite — 21 tests passed, 73 assertions, including public routes, panel auth redirects, mobile API v1, and Sanctum.
+- GitHub Actions — frontend Node 22 and backend Laravel 13 / PHP 8.4 / MySQL 8 jobs passed on this pull request.
 
 ## Deployment requirements
 

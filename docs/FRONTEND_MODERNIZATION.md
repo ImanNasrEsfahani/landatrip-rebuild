@@ -61,6 +61,7 @@ The following unused or obsolete packages were removed after source searches con
 - SSR output is generated as `bootstrap/ssr/ssr.mjs` with its SSR manifest.
 - Laravel 13 regression suite: 21 tests passed with 73 assertions using the prepared isolated SQLite fixture.
 - CI: `.github/workflows/frontend-ci.yml` runs Node 22.12, locked installation, security audit, client build, manifest contract verification, and SSR build on pull requests to `main`.
+- GitHub Actions on PR #2: the frontend Node 22 job and the existing Laravel 13 / PHP 8.4 / MySQL 8 job both passed after the clean-checkout route contract fix.
 
 ## Remaining risks and follow-up
 
