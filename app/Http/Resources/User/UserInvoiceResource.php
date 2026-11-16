@@ -27,7 +27,7 @@ class UserInvoiceResource extends JsonResource
             'title'      => $this->title,
             'created_at' => $this->created_at->format('Y/m/d') . " (" . $this->created_at->diffForHumans() . ")",
             'expired_at' => $this->expire->format('Y/m/d') . " (" . $this->expire->diffForHumans() . ")",
-            'total'      => $this->subtotal . " " . $this->currency->symbol,
+            'total'      => $this->total . " " . ($this->currency?->symbol ?? ''),
             'status'     => $this->status?->description
         ];
     }

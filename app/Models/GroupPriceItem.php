@@ -55,7 +55,7 @@ class GroupPriceItem extends Model
      */
     public function group(): BelongsTo
     {
-        return $this->belongsTo(Group::class)->withTimestamps();
+        return $this->belongsTo(Group::class);
 
     }
 
@@ -64,7 +64,7 @@ class GroupPriceItem extends Model
      */
     public function currency(): BelongsTo
     {
-        return $this->belongsTo(Currency::class)->withTimestamps();
+        return $this->belongsTo(Currency::class);
     }
 
     /**

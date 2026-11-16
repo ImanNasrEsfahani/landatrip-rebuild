@@ -11,17 +11,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentVerifyRequest;
 use App\Http\Requests\StoreTourRequest;
 use App\Http\Requests\UpdateTourRequest;
-use App\Models\Group;
 use App\Models\Invoice;
 use App\Models\Tour;
 use App\Models\Transaction;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Shetabit\Multipay\Invoice as ZarinPalInvoice;
 use Shetabit\Payment\Facade\Payment;
 
 class TourController extends Controller
@@ -118,42 +113,15 @@ class TourController extends Controller
     public function booking($tour, $tourOperation)
     {
         $tour = Tour::where('slug', $tour)->firstOrFail();
-        $tourOperation = Group::find($tourOperation);
+        $group = $tour->groups()->findOrFail($tourOperation);
+        abort_unless($group->public && $group->status->value === GroupStatusEnum::registration
+            && now()->toDateString() >= $group->start_registration_date
+            && now()->toDateString() <= $group->end_registration_date
+            && $group->users()->count() < $group->max_capacity, 409, 'Registration is closed for this group.');
 
-        if ($tourOperation->status->value !== GroupStatusEnum::registration) {
-           return redirect()->back()->with('error', 'This tour is not possible to be booked.');
-        }
-
-        $amount = (int) ($tour->groups()->latest()->first()->price * 51000);
-        $description = 'Travel course: ' . $tour->title;
-
-        // Create new invoice.
-        $invoice = (new ZarinPalInvoice)->amount($amount);
-        $invoiceModel = Invoice::create([
-                                'user_id'       =>  1,
-                                'coupon_id'     =>  null,
-                                'title'         =>  $description,
-                                'total'         =>  $amount,
-                                'discount'      =>  0,
-                                'tax'           =>  0,
-                                'subtotal'      =>  $amount,
-                                'expire'        =>  Carbon::now()->addDay(2)
-                            ]);
-
-        //dd($invoiceModel);
-
-        // Purchase the given invoice.
-        return Payment::purchase($invoice,function($driver, $transactionId) use ($invoiceModel, $amount, $description){
-            // We can store $transactionId in database.
-            Transaction::create([
-                'invoice_id'            =>  $invoiceModel->id,
-                'amount'                =>  $amount,
-                'transaction info'      =>  $description,
-                'phone'                 =>  '09131193442',
-                'email'                 =>  'info@landatrip.com',
-                'authority'             =>  $transactionId
-            ]);
-        })->pay()->render();
+        // The stored price items do not define the selected package, traveller
+        // quantities, tax, or gateway currency. Charging would invent a price.
+        abort(409, 'Invoice pricing is not configured for booking.');
     }
 
     /**
@@ -170,16 +138,23 @@ class TourController extends Controller
                 return [$transaction, $transaction->status->value === TransactionStatusEnum::completed, false];
             }
 
+            $invoice = Invoice::whereKey($transaction->invoice_id)->lockForUpdate()->firstOrFail();
+            if ($invoice->status->value === InvoiceStatusEnum::paid) {
+                return [$transaction, true, false];
+            }
+            abort_unless($invoice->status->value === InvoiceStatusEnum::pending
+                && ($invoice->expire->isToday() || $invoice->expire->isFuture()), 409, 'Invoice is no longer payable.');
+
             if ($request->validated('Status') !== 'OK') {
                 $transaction->update(['status' => TransactionStatusEnum::failed]);
                 return [$transaction, false, true];
             }
 
-            Payment::amount((int) $transaction->invoice->total)
+            Payment::amount((int) $invoice->total)
                 ->transactionId($transaction->authority)
                 ->verify();
             $transaction->update(['status' => TransactionStatusEnum::completed]);
-            $transaction->invoice->update(['status' => InvoiceStatusEnum::paid]);
+            $invoice->update(['status' => InvoiceStatusEnum::paid]);
 
             return [$transaction, true, true];
         });

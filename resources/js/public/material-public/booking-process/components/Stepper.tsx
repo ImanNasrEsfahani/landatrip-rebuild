@@ -207,6 +207,7 @@ export default function Steppers() {
         {activeStep === 5 ? 
           <Button
           variant='contained'
+            disabled
             type='button'
             sx={{bgcolor: color.tertiary.main , ml : 5 , p : "10px 40px" , textTransform : "none" , borderRadius : "12px", color : "white" , marginRight: 1  }}
           >
@@ -215,7 +216,7 @@ export default function Steppers() {
         : 
           <Button
           variant='contained'
-            disabled={activeStep === 5}
+            disabled={activeStep >= 4}
             onClick={handleNext}
             type='button'
             endIcon={<NavigateNextIcon/>}

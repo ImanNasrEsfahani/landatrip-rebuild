@@ -65,7 +65,7 @@ class E2eSeeder extends Seeder
                 'city_id' => $cityId, 'tour_overview' => 'A disposable browser test tour.',
                 'status' => 2,
             ]);
-            Group::withoutEvents(fn () => Group::create([
+            $group = Group::withoutEvents(fn () => Group::create([
                 'language_id' => $language->id, 'tour_id' => $tourId,
                 'title' => 'E2E Sample Group', 'slug' => 'e2e-sample-group',
                 'start_registration_date' => now()->subDay()->toDateString(),
@@ -74,6 +74,14 @@ class E2eSeeder extends Seeder
                 'end_date_tour' => now()->addMonths(2)->addDays(3)->toDateString(),
                 'days' => 3, 'nights' => 2, 'min_capacity' => 1, 'max_capacity' => 8,
             ]));
+            $currencyId = DB::table('currencies')->insertGetId([
+                'name' => 'USD', 'symbol' => '$', 'flag' => 'fixture',
+            ]);
+            DB::table('group_price_items')->insert([
+                'group_id' => $group->id, 'currency_id' => $currencyId,
+                'title' => 'Sample stored item', 'amount' => 125,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
         });
     }
 }

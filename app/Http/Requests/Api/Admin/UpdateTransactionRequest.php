@@ -24,10 +24,12 @@ class UpdateTransactionRequest extends FormRequest
     public function rules()
     {
         return [
-            'invoice_id'        =>  ["required"],
-            'transaction_info'  =>  ["required"],
-            'authority'         =>  ["required"],
-            'status'            =>  ["required"]
+            // The transaction table has no amount, phone, email or
+            // transaction_info columns. Financial state is callback-owned.
+            'invoice_id' => ['prohibited'],
+            'status' => ['prohibited'],
+            'authority' => ['sometimes', 'required', 'string', 'max:255'],
+            'session_id' => ['sometimes', 'required', 'string', 'max:255'],
         ];
     }
 }

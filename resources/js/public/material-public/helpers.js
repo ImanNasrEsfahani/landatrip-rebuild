@@ -14,5 +14,5 @@ export function route(name, params = {}, page = null , pageSize= null) {
         result.uri = result.uri + "?page=" + page + "&pageSize=" + pageSize;
     }
 
-    return import.meta.env.VITE_APP_URL + "/" + result.uri;
+    return (import.meta.env.VITE_APP_URL || '') + "/" + result.uri;
 }

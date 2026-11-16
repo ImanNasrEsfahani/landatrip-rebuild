@@ -92,4 +92,22 @@ class PaymentCallbackTest extends TestCase
         Event::assertNotDispatched(SuccessPaymentEvent::class);
         Event::assertNotDispatched(FailsPaymentEvent::class);
     }
+
+    public function test_second_transaction_cannot_verify_an_already_paid_invoice(): void
+    {
+        Event::fake([SuccessPaymentEvent::class, FailsPaymentEvent::class]);
+        $first = $this->pendingTransaction();
+        $second = Transaction::create([
+            'invoice_id' => $first->invoice_id,
+            'authority' => 'e2e-authority-' . Str::random(16),
+            'session_id' => 'e2e-second-session',
+        ]);
+        $first->invoice->update(['status' => InvoiceStatusEnum::paid]);
+        Payment::shouldReceive('amount')->never();
+
+        $this->get('/payment/verify?Authority=' . $second->authority . '&Status=OK')
+            ->assertSuccessful()->assertViewIs('payment-result.payment-successful');
+        $this->assertSame(TransactionStatusEnum::pending, $second->fresh()->status->value);
+        Event::assertNotDispatched(SuccessPaymentEvent::class);
+    }
 }
