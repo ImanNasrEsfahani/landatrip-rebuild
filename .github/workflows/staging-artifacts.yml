@@ -32,15 +32,27 @@ jobs:
       - name: Verify image artifacts and PHP platform
         run: |
           docker compose --env-file .env.staging -f compose.staging.yml exec -T app sh -c 'composer check-platform-reqs --no-dev && test -s public/build/manifest.json && test -s bootstrap/ssr/ssr.mjs'
+      - name: Install browser test dependencies
+        run: npm ci
+      - name: Prepare Chromium
+        run: |
+          if command -v chromium >/dev/null 2>&1; then
+            echo "E2E_CHROMIUM_PATH=$(command -v chromium)" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
       - name: Run protected HTTPS Chromium smoke
         run: |
-          npm ci
-          npx playwright install --with-deps chromium
           set -a
           source .staging-access
           source .staging-credentials
           set +a
-          npm run test:staging
+          if ! npm run test:staging > staging-smoke.log 2>&1; then
+            tail -50 staging-smoke.log
+            while IFS= read -r line; do printf '::error::%s\n' "$line"; done < <(tail -16 staging-smoke.log)
+            exit 1
+          fi
+          tail -20 staging-smoke.log
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4
