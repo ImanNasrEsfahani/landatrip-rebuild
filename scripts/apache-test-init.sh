@@ -5,6 +5,12 @@ if [[ ! -f .staging-access || ! -f .env.staging ]]; then
   echo 'Initialize disposable staging first.' >&2
   exit 1
 fi
+if ! grep -qx 'APP_URL=https://localhost:18443' .env.staging \
+   || ! grep -qx 'VITE_APP_URL=https://localhost:18443' .env.staging \
+   || ! grep -Eq '^SANCTUM_STATEFUL_DOMAINS=([^,]*,)*localhost:18443(,|$)' .env.staging; then
+  echo 'Apache test requires APP_URL, VITE_APP_URL, and Sanctum stateful domains for localhost:18443.' >&2
+  exit 1
+fi
 umask 077
 mkdir -p .apache-test
 chmod 755 .apache-test
