@@ -1,0 +1,64 @@
+name: Staging artifacts and smoke
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+          cache: npm
+      - name: Create isolated local staging configuration
+        run: bash scripts/staging-local-init.sh
+      - name: Validate staging Compose
+        run: docker compose --env-file .env.staging -f compose.staging.yml config --quiet
+      - name: Build and deploy commit images locally
+        run: |
+          if ! STAGING_EDGE=local bash scripts/staging-deploy.sh > staging-deploy.log 2>&1; then
+            tail -40 staging-deploy.log
+            while IFS= read -r line; do printf '::error::%s\n' "$line"; done < <(tail -12 staging-deploy.log)
+            exit 1
+          fi
+          tail -20 staging-deploy.log
+      - name: Add synthetic panel accounts
+        run: bash scripts/staging-seed.sh
+      - name: Verify image artifacts and PHP platform
+        run: |
+          docker compose --env-file .env.staging -f compose.staging.yml exec -T app sh -c 'composer check-platform-reqs --no-dev && test -s public/build/manifest.json && test -s bootstrap/ssr/ssr.mjs'
+      - name: Install browser test dependencies
+        run: npm ci
+      - name: Prepare Chromium
+        run: |
+          if command -v chromium >/dev/null 2>&1; then
+            echo "E2E_CHROMIUM_PATH=$(command -v chromium)" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Run protected HTTPS Chromium smoke
+        run: |
+          set -a
+          source .staging-access
+          source .staging-credentials
+          set +a
+          if ! npm run test:staging > staging-smoke.log 2>&1; then
+            tail -50 staging-smoke.log
+            grep -E 'Error:|Expected:|Received:|Timeout|net::ERR|failed|at .*staging.spec.ts' staging-smoke.log | head -30 | while IFS= read -r line; do printf '::error::%s\n' "$line"; done || true
+            exit 1
+          fi
+          tail -20 staging-smoke.log
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-playwright-results
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore

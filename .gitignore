@@ -280,3 +280,7 @@ fabric.properties
 
 *.zip
 
+
+!.env.staging.example
+.staging-credentials
+.staging-access

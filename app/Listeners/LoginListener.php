@@ -41,6 +41,10 @@ class LoginListener
         $activity->user()->associate($event->user);
         $activity->save();
 
+        if (app()->environment('staging')) {
+            return;
+        }
+
         Log::info("activity listener: " . 'http://ip-api.com/json/' . request()->ip() .'?callback=' .  route("update.activity.ip.response", $activity->id));
         Http::timeout(10)->get('http://ip-api.com/json/' . request()->ip() .'?callback=' .  route("update.activity.ip.response", $activity->id));
     }

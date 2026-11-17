@@ -92,7 +92,7 @@ return [
     | List all locales that your application works with
     |
     */
-    'available_locales' => collect([
+    'available_locales' => [
         [
             'slug'       =>  'en',
             'flag'       =>  'US',
@@ -111,7 +111,7 @@ return [
             'mini-name'  =>  'Fa',
             'name'       =>  'Persian'
         ]
-    ]),
+    ],
 
     /*
     |--------------------------------------------------------------------------
