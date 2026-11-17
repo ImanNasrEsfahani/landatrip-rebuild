@@ -49,7 +49,7 @@ jobs:
           set +a
           if ! npm run test:staging > staging-smoke.log 2>&1; then
             tail -50 staging-smoke.log
-            while IFS= read -r line; do printf '::error::%s\n' "$line"; done < <(tail -16 staging-smoke.log)
+            grep -E 'Error:|Expected:|Received:|Timeout|net::ERR|failed|at .*staging.spec.ts' staging-smoke.log | head -30 | while IFS= read -r line; do printf '::error::%s\n' "$line"; done || true
             exit 1
           fi
           tail -20 staging-smoke.log
