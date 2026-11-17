@@ -1,15 +1,8 @@
 {
     "i18n-ally.localesPaths": [
         "lang",
-        "old_resources/js/admin-panel/locales",
-        "old_resources/js/teacher-panel/locales",
-        "old_resources/js/user-panel/locales",
-        "old_vendor/bensampo/laravel-enum/lang",
         "resources/js/admin-panel/locales",
         "resources/js/teacher-panel/locales",
-        "resources/js/user-panel/locales",
-        "old_vendor/jetbrains/phpstorm-stubs/meta/locales",
-        "old_vendor/matchish/laravel-scout-elasticsearch/resources/lang",
-        "old_vendor/laravel/framework/src/Illuminate/Translation/lang"
+        "resources/js/user-panel/locales"
     ]
 }
