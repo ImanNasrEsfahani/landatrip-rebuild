@@ -12,6 +12,7 @@ public/hot
 playwright-report
 test-results
 .staging-*
+.apache-test
 storage
 public/storage
 *.sql

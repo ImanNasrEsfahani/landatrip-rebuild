@@ -1,0 +1,38 @@
+# Proposal only. Render and test away from the production Apache configuration.
+# TEST_LISTEN_MARKER (production Apache already listens on 80 and 443)
+
+<VirtualHost *:@HTTP_LISTEN@>
+    ServerName @SERVER_NAME@
+    ServerAlias www.landatrip.ca
+    Redirect 302 / @HTTPS_ORIGIN@/
+</VirtualHost>
+
+<VirtualHost *:@HTTPS_LISTEN@>
+    ServerName @SERVER_NAME@
+    ServerAlias www.landatrip.ca
+    ProxyPreserveHost On
+    ProxyAddHeaders On
+    SSLEngine on
+    SSLCertificateFile @CERT_FILE@
+    SSLCertificateKeyFile @KEY_FILE@
+
+    <Location "/">
+        AuthType Basic
+        AuthName "LandaTrip private staging"
+        AuthBasicProvider file
+        AuthUserFile @AUTH_FILE@
+        Require valid-user
+    </Location>
+
+    RequestHeader unset X-Forwarded-For
+    RequestHeader unset X-Forwarded-Host
+    RequestHeader set X-Forwarded-Proto "https"
+    RequestHeader set X-Forwarded-Port "@HTTPS_PORT@"
+    RequestHeader unset Authorization
+    RequestHeader set Authorization "expr=%{req:X-Staging-Api-Authorization}"
+    RequestHeader unset X-Staging-Api-Authorization
+
+    # TEST_PROBE_PROXY
+    ProxyPass / @UPSTREAM@/
+    ProxyPassReverse / @UPSTREAM@/
+</VirtualHost>

@@ -1,0 +1,19 @@
+# Review-only overlay for an Apache-fronted ARM64 host. Do not use the
+# staging-deploy.sh script with this overlay: it builds and migrates on-host.
+services:
+  mysql:
+    image: ${LANDATRIP_MYSQL_IMAGE:?Set a reviewed MySQL 8 image digest}
+    platform: linux/arm64
+  app:
+    image: ${LANDATRIP_PHP_IMAGE:?Set a reviewed ARM64 PHP image digest}
+    platform: linux/arm64
+    build: !reset null
+  scheduler:
+    image: ${LANDATRIP_PHP_IMAGE:?Set a reviewed ARM64 PHP image digest}
+    platform: linux/arm64
+  web:
+    image: ${LANDATRIP_WEB_IMAGE:?Set a reviewed ARM64 Nginx image digest}
+    platform: linux/arm64
+    build: !reset null
+    ports:
+      - '127.0.0.1:18080:8080'
