@@ -66,7 +66,21 @@ return [
 
         'gcs' => [
             'driver' => 'gcs',
-            'key_file_path' => env('GOOGLE_CLOUD_KEY_FILE', null), // optional: /path/to/service-account.json
+            'key_file_path' => (static function () {
+                $configured = env('GOOGLE_CLOUD_KEY_FILE');
+                if (! $configured) {
+                    return null; // Application Default Credentials or workload identity.
+                }
+
+                $resolved = realpath($configured);
+                $repository = realpath(base_path());
+                if (! $resolved || ! is_file($resolved)
+                    || ($repository && str_starts_with($resolved, $repository.DIRECTORY_SEPARATOR))) {
+                    throw new RuntimeException('Google Cloud credentials must be a readable file outside the repository.');
+                }
+
+                return $resolved;
+            })(),
             'key_file' => [], // optional: Array of data that substitutes the .json file (see below)
             'project_id' => env('GOOGLE_CLOUD_PROJECT_ID', 'your-project-id'), // optional: is included in key file
             'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET', 'your-bucket'),

@@ -298,6 +298,8 @@ fabric.properties
 # uploads require a verified private backup before removal from the index.
 /storage/app/public/*
 !/storage/app/public/.gitignore
+/storage/app/private/
+/storage/app/tmp-files/
 **/credentials.json
 **/*service-account*.json
 *.pem
