@@ -53,7 +53,7 @@ test('authenticated Laravel responses keep secure cookies and enforce CSRF', asy
   const response = await page.goto('/login');
   expect(response?.status()).toBe(200);
   expect(page.url()).toMatch(/^https:\/\/localhost:18443\/login/);
-  const cookieHeaders = response?.headersArray().filter(header => header.name.toLowerCase() === 'set-cookie') || [];
+  const cookieHeaders = (await response?.headersArray())?.filter(header => header.name.toLowerCase() === 'set-cookie') || [];
   expect(cookieHeaders.length).toBeGreaterThan(0);
   for (const cookie of cookieHeaders) {
     expect(cookie.value).toMatch(/;\s*Secure(?:;|$)/i);
