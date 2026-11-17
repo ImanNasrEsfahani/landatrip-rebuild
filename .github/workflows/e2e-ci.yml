@@ -15,7 +15,13 @@ jobs:
           node-version: '22.12.0'
           cache: npm
       - name: Run isolated MySQL and Chromium suite
-        run: bash scripts/e2e-run.sh
+        run: |
+          if ! bash scripts/e2e-run.sh > e2e-ci.log 2>&1; then
+            tail -70 e2e-ci.log
+            grep -E 'Error:|Expected:|Received:|Timeout|failed|Could not' e2e-ci.log | head -25 | while IFS= read -r line; do printf '::error::%s\n' "$line"; done || true
+            exit 1
+          fi
+          tail -18 e2e-ci.log
       - name: Upload Playwright report, screenshots, and failure traces
         if: always()
         uses: actions/upload-artifact@v4

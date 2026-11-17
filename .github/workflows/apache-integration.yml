@@ -51,7 +51,12 @@ jobs:
           source .staging-access
           source .staging-credentials
           set +a
-          STAGING_BASE_URL=https://localhost:18443 npx playwright test --config=playwright.apache.config.ts
+          if ! STAGING_BASE_URL=https://localhost:18443 npx playwright test --config=playwright.apache.config.ts > apache-smoke.log 2>&1; then
+            tail -70 apache-smoke.log
+            grep -E 'Error:|Expected:|Received:|Timeout|[0-9]+ failed|[0-9]+ passed' apache-smoke.log | head -25 | while IFS= read -r line; do printf '::error::%s\n' "$line"; done || true
+            exit 1
+          fi
+          tail -18 apache-smoke.log
       - name: Upload isolated browser evidence
         if: failure()
         uses: actions/upload-artifact@v4
