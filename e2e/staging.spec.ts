@@ -1,12 +1,15 @@
 import { expect, test } from '@playwright/test';
+import { stayLocal } from './helpers';
 
 const roles = ['user', 'teacher', 'agent', 'manager', 'admin'] as const;
+
+test.beforeEach(async ({ page }) => stayLocal(page));
 
 test('public pages, tour, assets, checkout gate and fixture isolation', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   for (const path of ['/', '/tour', '/tour/staging-sample-tour']) {
-    const response = await page.goto(path);
+    const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
     expect(response?.status(), path).toBe(200);
     await expect(page.locator('body')).not.toBeEmpty();
   }
