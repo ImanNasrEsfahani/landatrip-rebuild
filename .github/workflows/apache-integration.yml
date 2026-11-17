@@ -1,0 +1,62 @@
+name: Isolated Apache integration
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  apache:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+          cache: npm
+      - name: Initialize disposable staging with Apache test origin
+        run: |
+          bash scripts/staging-local-init.sh
+          sed -i 's|https://localhost:8443|https://localhost:18443|g; s|localhost:8443|localhost:18443|g' .env.staging
+          bash scripts/apache-test-init.sh
+      - name: Validate isolated Apache syntax and Compose
+        run: |
+          docker compose --env-file .env.staging -f compose.staging.yml -f compose.staging.local.yml -f compose.apache.test.yml config --quiet
+          docker compose --env-file .env.staging -f compose.staging.yml -f compose.apache.test.yml build apache-test
+          docker compose --env-file .env.staging -f compose.staging.yml -f compose.apache.test.yml run --rm --no-deps apache-test httpd -t
+      - name: Validate digest-only production overlay without pulling images
+        env:
+          LANDATRIP_PHP_IMAGE: ghcr.io/example/php@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          LANDATRIP_WEB_IMAGE: ghcr.io/example/web@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          LANDATRIP_MYSQL_IMAGE: mysql:8.0@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+        run: python3 scripts/check-apache-overlay.py
+      - name: Build and seed isolated application
+        run: |
+          STAGING_EDGE=local bash scripts/staging-deploy.sh > staging-deploy.log 2>&1 || { tail -40 staging-deploy.log; exit 1; }
+          bash scripts/staging-seed.sh
+      - name: Start isolated Apache gate
+        run: docker compose --env-file .env.staging -f compose.staging.yml -f compose.staging.local.yml -f compose.apache.test.yml up -d apache-test
+      - name: Install browser tools
+        run: |
+          npm ci
+          if command -v chromium >/dev/null 2>&1; then
+            echo "E2E_CHROMIUM_PATH=$(command -v chromium)" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Verify Apache gate and Laravel flows
+        run: |
+          set -a
+          source .staging-access
+          source .staging-credentials
+          set +a
+          STAGING_BASE_URL=https://localhost:18443 npx playwright test --config=playwright.apache.config.ts
+      - name: Upload isolated browser evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apache-integration-results
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore

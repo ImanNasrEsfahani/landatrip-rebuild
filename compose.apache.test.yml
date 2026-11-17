@@ -1,0 +1,22 @@
+# Isolated test-only Apache front end for the disposable staging stack.
+services:
+  header-probe:
+    image: python:3.12-alpine
+    command: ["python", "/app/header_probe.py"]
+    volumes:
+      - ./docker/apache-test/header_probe.py:/app/header_probe.py:ro
+    networks: [internal]
+  apache-test:
+    build:
+      context: .
+      dockerfile: docker/apache-test/Dockerfile
+    ports:
+      - '127.0.0.1:18081:8081'
+      - '127.0.0.1:18443:8444'
+    volumes:
+      - ./.apache-test:/run/landatrip-test:ro
+      - ./.apache-test/landatrip.conf:/usr/local/apache2/conf/extra/landatrip.conf:ro
+    depends_on:
+      web: { condition: service_healthy }
+      header-probe: { condition: service_started }
+    networks: [internal, public]

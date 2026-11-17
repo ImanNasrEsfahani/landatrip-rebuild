@@ -284,3 +284,4 @@ fabric.properties
 !.env.staging.example
 .staging-credentials
 .staging-access
+.apache-test/
