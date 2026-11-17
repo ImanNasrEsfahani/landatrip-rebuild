@@ -23,7 +23,7 @@ Phase C (Laravel 13) — verified and committed as `63fef424`. Phase A is commit
 | Current lock consistency | Passes `composer validate` after Phase C resolution; Composer reports no known advisories |
 | Database target | SQLite `/workspace/.cloud-setup/development.sqlite` |
 | Installed `vendor` | Present and synchronized with the Laravel 13 lock |
-| Reference artifacts | `old_vendor` and `old_composer.lock`; not trusted for upgrades |
+| Reference artifacts at migration time | `old_vendor` and `old_composer.lock`; retired from the working tree in Phase 8 and available only in Git history |
 
 ## Completed work
 

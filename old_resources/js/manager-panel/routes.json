@@ -1,1 +1,0 @@
-{"routes":{"login":{"uri":"login","name":"login"},"logout":{"uri":"logout","name":"logout"},"api.public.temporary-file.store":{"uri":"api\/temporary-file","name":"api.public.temporary-file.store"}}}

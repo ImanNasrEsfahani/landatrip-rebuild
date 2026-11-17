@@ -4,6 +4,14 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# Historical source snapshots and resolved dependencies
+/old_*
+
+# New uploads and credentials must not enter Git. Existing tracked media is
+# retained until a verified private backup and storage migration are complete.
+/storage/app/public/*
+!/storage/app/public/.gitignore
+
 # Laravel 4 specific
 bootstrap/compiled.php
 bootstrap/ssr/
