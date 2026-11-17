@@ -13,7 +13,7 @@ Apache has enabled virtual hosts for `landatrip.ca`, `landatrip.com`, and NovaNe
 | Approach | Assessment |
 | --- | --- |
 | Existing VM unchanged | Blocked by physical memory and existing swap use. |
-| Existing VM after approved RAM upgrade | At least 4 GiB total RAM; target 6 GiB for shared production workloads, subject to administrator container measurements and load testing. Keep disk reserve for images, database, media, and backups. |
+| Existing VM after approved RAM upgrade | The later administrator inventory in `PHASE7B_CAPACITY_AND_503.md` supports an 8 GiB shared-host target, especially if the legacy `.ca` site is restored alongside the new stack. Keep disk reserve for images, database, media, and backups. |
 | Off-host ARM64 images, minimal on-host pull | Required even after a RAM upgrade. Pull reviewed image digests; never build on the shared host. It does not fix the current RAM shortage. |
 | Separate staging environment | Preferred if a production VM upgrade or `.ca` cutover is unsuitable. Budget at least 4 GiB RAM and 20 GiB disk plus backups. No environment has been provisioned. |
 
@@ -38,7 +38,7 @@ ProxyPass / http://127.0.0.1:18080/
 ProxyPassReverse / http://127.0.0.1:18080/
 ```
 
-Keep the existing HTTP-to-HTTPS behavior, SSL settings, other virtual hosts, and DNS untouched. Confirm `mod_proxy`, `mod_proxy_http`, and `mod_headers` are enabled before planning a change. Apache must overwrite client-supplied forwarded headers; Nginx forwards the resulting scheme and host to PHP-FPM. Keep PHP-FPM and MySQL on the Compose internal network with no published port. Set `APP_URL=https://landatrip.ca`, `SESSION_SECURE_COOKIE=true`, `SESSION_SAME_SITE=lax`, the matching Sanctum stateful domain and CORS origin, and `TRUSTED_PROXIES` to the private Nginx proxy address or the narrowest reviewed private network range. Do not use a wildcard proxy trust for a publicly reachable upstream. Verify cookie Secure attributes, CSRF/login/logout, API auth, asset URLs, and redirects through HTTPS before cutover.
+The existing port 80 virtual host also proxies to port 5001; it does not currently redirect to HTTPS. A later cutover must explicitly address both virtual hosts. An administrator can propose an HTTP-to-HTTPS redirect after confirming TLS and client behavior, or keep an approved HTTP route; leaving the old HTTP proxy in place would preserve the 503. Keep SSL settings, other virtual hosts, and DNS untouched. Confirm `mod_proxy`, `mod_proxy_http`, and `mod_headers` are enabled before planning a change. Apache must overwrite client-supplied forwarded headers; Nginx forwards the resulting scheme and host to PHP-FPM. Keep PHP-FPM and MySQL on the Compose internal network with no published port. Set `APP_URL=https://landatrip.ca`, `SESSION_SECURE_COOKIE=true`, `SESSION_SAME_SITE=lax`, the matching Sanctum stateful domain and CORS origin, and `TRUSTED_PROXIES` to the private Nginx proxy address or the narrowest reviewed private network range. Do not use a wildcard proxy trust for a publicly reachable upstream. Verify cookie Secure attributes, CSRF/login/logout, API auth, asset URLs, and redirects through HTTPS before cutover. The Apache overlay removes Caddy's Basic authentication; Apache must provide a reviewed access restriction before this staging application is made reachable from any public virtual host.
 
 ## Deployment gate and rollback
 
