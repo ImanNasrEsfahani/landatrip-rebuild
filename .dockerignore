@@ -2,7 +2,7 @@
 .github
 .env*
 vendor
-old_vendor
+old_*
 node_modules
 storage/logs
 storage/framework
@@ -15,6 +15,7 @@ test-results
 .apache-test
 storage
 public/storage
+public/adminer.php
 *.sql
 *.pem
 *.key

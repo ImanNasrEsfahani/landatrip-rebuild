@@ -285,3 +285,14 @@ fabric.properties
 .staging-credentials
 .staging-access
 .apache-test/
+
+# New uploads and credential material must stay outside Git. Existing tracked
+# uploads require a verified private backup before removal from the index.
+/storage/app/public/*
+!/storage/app/public/.gitignore
+**/credentials.json
+**/*service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
