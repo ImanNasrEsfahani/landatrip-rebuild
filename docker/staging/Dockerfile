@@ -32,6 +32,7 @@ RUN --mount=type=secret,id=build_ca,required=false \
     fi; \
     composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 COPY --chown=www-data:www-data . .
+RUN test ! -e public/adminer.php && test ! -e storage/app/public/credentials.json && test ! -e old_app
 COPY --from=assets --chown=www-data:www-data /app/public/build /app/public/build
 COPY --from=assets --chown=www-data:www-data /app/bootstrap/ssr /app/bootstrap/ssr
 RUN rm -f public/hot && ln -s /app/storage/app/public public/storage \

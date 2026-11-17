@@ -3,12 +3,6 @@
 .env*
 vendor
 old_*
-READMEold.md
-database/seeders/*.old*
-.vscode
-docs
-tests
-e2e
 node_modules
 storage/logs
 storage/framework
@@ -21,6 +15,7 @@ test-results
 .apache-test
 storage
 public/storage
+public/adminer.php
 *.sql
 *.pem
 *.key
