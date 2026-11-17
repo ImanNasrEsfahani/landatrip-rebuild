@@ -7,6 +7,7 @@ if [[ ! -f .staging-access || ! -f .env.staging ]]; then
 fi
 umask 077
 mkdir -p .apache-test
+chmod 755 .apache-test
 openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
   -keyout .apache-test/key.pem -out .apache-test/cert.pem \
   -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost' >/dev/null 2>&1
@@ -15,6 +16,7 @@ source .staging-access
 set +a
 access_hash="$(printf '%s' "$STAGING_ACCESS_PASSWORD" | openssl passwd -apr1 -stdin)"
 printf '%s:%s\n' "$STAGING_ACCESS_USER" "$access_hash" > .apache-test/users
+chmod 644 .apache-test/users
 python3 - <<'PY'
 from pathlib import Path
 

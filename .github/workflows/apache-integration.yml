@@ -34,6 +34,7 @@ jobs:
         run: |
           STAGING_EDGE=local bash scripts/staging-deploy.sh > staging-deploy.log 2>&1 || { tail -40 staging-deploy.log; exit 1; }
           bash scripts/staging-seed.sh
+          echo "STAGING_IMAGE_TAG=$(git rev-parse --short=12 HEAD)" >> "$GITHUB_ENV"
       - name: Start isolated Apache gate
         run: docker compose --env-file .env.staging -f compose.staging.yml -f compose.staging.local.yml -f compose.apache.test.yml up -d apache-test
       - name: Install browser tools

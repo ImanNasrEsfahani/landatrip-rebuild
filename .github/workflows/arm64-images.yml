@@ -23,6 +23,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build PHP ARM64 image
+        id: php
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -37,6 +38,7 @@ jobs:
           cache-from: type=gha,scope=landatrip-arm64
           cache-to: type=gha,mode=max,scope=landatrip-arm64
       - name: Build Nginx ARM64 image
+        id: web
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -52,10 +54,15 @@ jobs:
           cache-to: type=gha,mode=max,scope=landatrip-arm64
       - name: Verify published ARM64 manifests
         if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        env:
+          PHP_DIGEST: ${{ steps.php.outputs.digest }}
+          WEB_DIGEST: ${{ steps.web.outputs.digest }}
         run: |
           set -euo pipefail
           for image in php web; do
-            ref="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/landatrip-rebuild-$image:$GITHUB_SHA"
-            docker buildx imagetools inspect --raw "$ref" | jq -e 'any(.manifests[]; .platform.os == "linux" and .platform.architecture == "arm64")' >/dev/null
-            docker buildx imagetools inspect "$ref" | sed -n '1,4p'
+            if [[ "$image" == php ]]; then digest="$PHP_DIGEST"; else digest="$WEB_DIGEST"; fi
+            [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+            ref="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/landatrip-rebuild-$image@$digest"
+            docker buildx imagetools inspect --raw "$ref" | jq -e 'if .manifests then any(.manifests[]; .platform.os == "linux" and .platform.architecture == "arm64") else .os == "linux" and .architecture == "arm64" end' >/dev/null
+            printf '%s\n' "$ref" | tee -a "$GITHUB_STEP_SUMMARY"
           done

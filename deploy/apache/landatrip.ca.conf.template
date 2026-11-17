@@ -3,11 +3,13 @@
 
 <VirtualHost *:@HTTP_LISTEN@>
     ServerName @SERVER_NAME@
+    ServerAlias www.landatrip.ca
     Redirect 302 / @HTTPS_ORIGIN@/
 </VirtualHost>
 
 <VirtualHost *:@HTTPS_LISTEN@>
     ServerName @SERVER_NAME@
+    ServerAlias www.landatrip.ca
     ProxyPreserveHost On
     ProxyAddHeaders On
     SSLEngine on

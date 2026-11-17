@@ -1,24 +1,21 @@
 import { expect, request, test } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
 
 const baseURL = process.env.STAGING_BASE_URL || 'https://localhost:18443';
 const user = process.env.STAGING_ACCESS_USER || 'staging';
 const password = process.env.STAGING_ACCESS_PASSWORD || '';
 const basic = `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`;
+const statusWithoutContext = (path: string, headers: string[] = []) => Number(execFileSync('curl', [
+  '--noproxy', '*', '--silent', '--show-error', '--insecure', '--output', '/dev/null',
+  '--write-out', '%{http_code}', ...headers.flatMap(header => ['--header', header]), `${baseURL}${path}`,
+], { encoding: 'utf8' }));
 
 test('Apache requires Basic credentials before reaching any upstream', async () => {
-  const anonymous = await request.newContext({ baseURL, ignoreHTTPSErrors: true });
-  expect((await anonymous.get('/healthz')).status()).toBe(401);
-  expect((await anonymous.get('/__proxy_probe')).status()).toBe(401);
-  expect((await anonymous.get('/build/manifest.json')).status()).toBe(401);
-  const customOnly = await anonymous.get('/__proxy_probe', {
-    headers: { 'X-Staging-Api-Authorization': 'Bearer isolated-probe-token' },
-  });
-  expect(customOnly.status()).toBe(401);
-  const wrong = await anonymous.get('/healthz', {
-    headers: { Authorization: `Basic ${Buffer.from(`${user}:wrong`).toString('base64')}` },
-  });
-  expect(wrong.status()).toBe(401);
-  await anonymous.dispose();
+  expect(statusWithoutContext('/healthz')).toBe(401);
+  expect(statusWithoutContext('/__proxy_probe')).toBe(401);
+  expect(statusWithoutContext('/build/manifest.json')).toBe(401);
+  expect(statusWithoutContext('/__proxy_probe', ['X-Staging-Api-Authorization: Bearer isolated-probe-token'])).toBe(401);
+  expect(statusWithoutContext('/healthz', [`Authorization: Basic ${Buffer.from(`${user}:wrong`).toString('base64')}`])).toBe(401);
 });
 
 test('Apache strips Basic credentials and forwards only the separate bearer header', async () => {
@@ -44,13 +41,15 @@ test('Apache strips Basic credentials and forwards only the separate bearer head
   await authenticated.dispose();
 });
 
-test('HTTP redirects to HTTPS and authenticated Laravel responses keep secure cookies', async ({ page }) => {
+test('HTTP redirects to HTTPS with path and query preserved', async () => {
   const plain = await request.newContext({ ignoreHTTPSErrors: true });
   const redirect = await plain.get('http://localhost:18081/login?source=apache', { maxRedirects: 0 });
   expect(redirect.status()).toBe(302);
   expect(redirect.headers().location).toBe('https://localhost:18443/login?source=apache');
   await plain.dispose();
+});
 
+test('authenticated Laravel responses keep secure cookies and enforce CSRF', async ({ page }) => {
   const response = await page.goto('/login');
   expect(response?.status()).toBe(200);
   expect(page.url()).toMatch(/^https:\/\/localhost:18443\/login/);
