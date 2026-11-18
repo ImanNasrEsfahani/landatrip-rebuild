@@ -29,17 +29,21 @@ Route::middleware(['auth:sanctum', 'panel.role:admin'])->name("api.web.v1.admin-
 
 
     // Tickets
-    Route::apiResource("tickets", TicketController::class)->only(["store", "show", "update"]);
-    Route::apiResource("tickets/{ticket:id}/record", TicketRecordController::class)->only(["index", "store"]);
-    Route::post("tickets/{ticket}/assign-me", [TicketController::class, "assignMe"])->name("ticket.assignMe");
+    Route::apiResource("tickets", TicketController::class)->only(["store", "show", "update"])
+        ->middlewareFor("store", "can:triagePanelTickets,".\App\Models\Ticket::class)
+        ->middlewareFor("show", "can:accessPanelSupportTicket,ticket")
+        ->middlewareFor("update", "can:managePanelAssignedTicket,ticket");
+    Route::apiResource("tickets/{ticket:id}/record", TicketRecordController::class)->only(["index", "store"])
+        ->middleware("can:accessPanelSupportTicket,ticket");
+    Route::post("tickets/{ticket}/assign-me", [TicketController::class, "assignMe"])->middleware("can:accessPanelSupportTicket,ticket")->name("ticket.assignMe");
 
     Route::prefix("ticket")->name("ticket.")->group(function () {
-        Route::get("open", [TicketController::class, "open"])->name("open");
-        Route::post("{ticket}/closing", [TicketController::class, "closeTicket"])->name("closing.update");
+        Route::get("open", [TicketController::class, "open"])->middleware("can:triagePanelTickets,".\App\Models\Ticket::class)->name("open");
+        Route::post("{ticket}/closing", [TicketController::class, "closeTicket"])->middleware("can:managePanelAssignedTicket,ticket")->name("closing.update");
 
-        Route::get("archived", [TicketController::class, "archived"])->name("archived");
+        Route::get("archived", [TicketController::class, "archived"])->middleware("can:triagePanelTickets,".\App\Models\Ticket::class)->name("archived");
         Route::post("search", [TicketController::class, "search"])->name("search");
-        Route::get("unassigned", [TicketController::class, "unassigned"])->name("unassigned");
+        Route::get("unassigned", [TicketController::class, "unassigned"])->middleware("can:triagePanelTickets,".\App\Models\Ticket::class)->name("unassigned");
         //Route::post("search", function () {})->name("search");
     });
 
