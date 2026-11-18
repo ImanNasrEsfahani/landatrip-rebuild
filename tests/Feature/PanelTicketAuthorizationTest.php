@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TicketStatusEnum;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\Ticket;
@@ -65,6 +66,22 @@ class PanelTicketAuthorizationTest extends TestCase
                 $this->assertSame($assignee, $ticket->fresh()->assigned_agent_id);
             }
         }
+
+        if ($role === 'user') {
+            $rating = $this->postJson("$root/rating", ['rating' => 4])->assertStatus($status);
+            if ($status === 200) {
+                $rating->assertContent('test');
+            }
+        }
+
+        $closingUri = $role === 'admin' ? str_replace('/tickets/', '/ticket/', $root) : $root;
+        $closeAllowed = $status === 200 && $relation !== 'unassigned';
+        $oldStatus = $ticket->fresh()->status->value;
+        $this->postJson("$closingUri/closing", ['rate' => 4])->assertStatus($closeAllowed ? 200 : 404);
+        $this->assertSame(
+            $closeAllowed ? ($role === 'admin' ? TicketStatusEnum::rating : TicketStatusEnum::closed) : $oldStatus,
+            $ticket->fresh()->status->value,
+        );
     }
 
     public function test_global_support_admin_can_claim_an_unassigned_ticket_and_reply(): void

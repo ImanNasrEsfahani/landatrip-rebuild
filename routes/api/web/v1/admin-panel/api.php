@@ -65,7 +65,7 @@ Route::middleware(['auth:sanctum', 'panel.role:admin'])->name("api.web.v1.admin-
     // Groups
     Route::prefix("group")->name("group.")->group(function () {
         Route::apiResource("", GroupController::class)->only(["index", "update"]);
-        Route::get("archived", [GroupController::class, "archived"])->middleware("can:triagePanelTickets,".\App\Models\Ticket::class)->name("archived");
+        Route::get("archived", [GroupController::class, "archived"])->name("archived");
     });
 
     // Agreements
