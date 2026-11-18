@@ -53,7 +53,9 @@ Route::middleware(['auth:sanctum', 'panel.role:user'])->name("api.web.v1.user-pa
 
         Route::apiResource("work-experience", UserWorkExperienceController::class)->only(["index", "store", "update", "destroy" ,"show"]);
 
-        Route::apiResource("documents", UserDocumentController::class)->only(["index", "store", "update", "destroy"]);
+        Route::apiResource("documents", UserDocumentController::class)->only(["index", "store", "update", "destroy"])
+            ->middlewareFor("update", "can:update,document")
+            ->middlewareFor("destroy", "can:delete,document");
 
         Route::apiResource("agreements", UserAgreementController::class)->only(["index", "show", "update"]);
 

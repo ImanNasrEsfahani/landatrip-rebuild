@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\UserDocument;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserDocumentPolicy
@@ -51,9 +52,11 @@ class UserDocumentPolicy
      * @param  \App\Models\UserDocument  $userDocument
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, UserDocument $userDocument)
+    public function update(User $user, UserDocument $userDocument): Response
     {
-        //
+        return $user->id === $userDocument->user_id
+            ? Response::allow()
+            : Response::denyAsNotFound();
     }
 
     /**
@@ -63,9 +66,11 @@ class UserDocumentPolicy
      * @param  \App\Models\UserDocument  $userDocument
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, UserDocument $userDocument)
+    public function delete(User $user, UserDocument $userDocument): Response
     {
-        //
+        return $user->id === $userDocument->user_id
+            ? Response::allow()
+            : Response::denyAsNotFound();
     }
 
     /**
