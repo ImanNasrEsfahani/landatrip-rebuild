@@ -1,0 +1,13 @@
+# Ticket attachment delivery
+
+This change depends on the temporary upload ownership PR. New user-panel ticket replies claim only an owned, unexpired, unconsumed temporary upload. The consumer writes to the private disk at `ticket-attachments/{server UUID}.{validated extension}` and marks the new image row with nullable `private_attachment`. No legacy rows are backfilled.
+
+`GET /api/ticket-attachments/{image}/download` requires Sanctum, validates the image morph type and chat type, loads its ticket record and authorizes the ticket owner or global support admin permitted by the existing support-ticket policy. Team-only admins and admins assigned to another ticket cannot download. The stored name must match the server UUID allowlist. No query parameter or public-disk fallback selects a path. Downloads use attachment disposition, octet-stream, nosniff and private/no-store caching.
+
+The existing image `url` field resolves to this endpoint only for new private attachments. Other image URLs and legacy ticket attachment filenames retain their exact values. No mobile route is added or removed: the web/common API grows by one route to 350 total / 215 API / 49 mobile v1.
+
+Legacy ticket bytes under public `users/chat` remain potentially accessible directly wherever the public storage symlink is served. Ticket API authorization cannot protect those existing bytes. New private downloads do not claim to remediate them. No legacy URL is silently blocked or moved. Existing documents still use legacy storage writers pending a separate private-write transition; their private reader never falls back to public storage.
+
+The read-only legacy inventory must reconcile Image → TicketRecord → Ticket and UserDocument references with filesystem paths, checksums and backups in restricted storage. Retain unresolved/ownerless items. Verify encrypted backup restoration before preparing an explicit copy/mapping/redirect and rollback plan. Confirm intended support access, image rendering through authenticated URLs and retention with the owner before a migration. Do not publish a media manifest, filenames, GPS coordinates or customer bytes in this public repository. Existing backup and production files are untouched.
+
+Remaining work includes EXIF stripping for newly uploaded images, a reviewed expired/private-temp retention job, malware scanning policy if richer document formats are needed, and the legacy mobile upload response contract. File validation is not malware detection. Source copies and possible crash orphans remain until a separate preservation-aware cleanup design is approved.

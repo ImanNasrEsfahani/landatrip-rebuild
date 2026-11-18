@@ -41,7 +41,7 @@ class Image extends BaseModel
      * @var array
      */
         protected $fillable = [
-        'url',
+        'url', 'private_attachment',
         'image_type',
         'file_type',
         'alt',
@@ -55,4 +55,12 @@ class Image extends BaseModel
      * @var array
      */
     protected $guarded = ['id'];
+    protected $hidden = ['private_attachment'];
+
+    public function getUrlAttribute($value)
+    {
+        return $this->private_attachment
+            ? route('api.public.ticket-attachments.download', ['image' => $this->id], false)
+            : $value;
+    }
 }
