@@ -19,7 +19,7 @@ class StoreTeacherTourRequest extends FormRequest
             'certification_id' => ['nullable', Rule::prohibitedIf(fn () => $this->filled('certification_id'))],
             'title' => ['required', 'string', 'min:3', 'max:250'],
             'subtitle' => ['required', 'string', 'min:3', 'max:250'],
-            'tour_overview' => ['required', 'string', 'min:3', 'max:250'],
+            'tour_overview' => ['required', 'string', 'min:3', 'max:250', 'not_regex:/[<>]/'],
             // The active city autocomplete sends its city ID under this legacy key.
             'location_id' => ['required', 'integer', 'min:1', 'exists:cities,id'],
             'transport' => ['nullable', 'string', 'min:3', 'max:20'],
@@ -39,7 +39,7 @@ class StoreTeacherTourRequest extends FormRequest
             'excludes.*.title' => ['required', 'string', 'min:3', 'max:25'],
             'itineraries' => ['required', 'array', 'min:1', 'max:50'],
             'itineraries.*.title' => ['required', 'string', 'min:3', 'max:25'],
-            'itineraries.*.description' => ['required', 'string', 'min:3', 'max:25'],
+            'itineraries.*.description' => ['required', 'string', 'min:3', 'max:25', 'not_regex:/[<>]/'],
             'itineraries.*.start' => ['required', 'integer', 'min:1', 'max:50'],
             'itineraries.*.end' => ['required', 'integer', 'gte:itineraries.*.start', 'max:50'],
         ];
