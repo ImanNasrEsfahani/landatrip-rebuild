@@ -70,7 +70,7 @@ class TeacherTourCreationTest extends TestCase
         $this->postJson($this->uri(), $payload)->assertUnauthorized();
         $other = $this->user('other', 'user');
         $this->actingAs($other)->postJson($this->uri(), $payload)->assertForbidden();
-        foreach ([['location_id' => 99999999], ['age' => [40, 20]], ['itineraries' => []],
+        foreach ([['tour_overview' => '<script>alert(1)</script>'], ['location_id' => 99999999], ['age' => [40, 20]], ['itineraries' => []],
             ['itineraries' => [['title' => 'Bad day', 'description' => 'Bad range', 'start' => 3, 'end' => 1]]]] as $invalid) {
             $this->actingAs($teacher)->postJson($this->uri(), array_replace($payload, $invalid))->assertUnprocessable();
         }
