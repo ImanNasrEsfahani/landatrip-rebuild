@@ -33,6 +33,13 @@ class UserDocumentPolicy
         //
     }
 
+    public function downloadPrivate(User $user, UserDocument $userDocument): \Illuminate\Auth\Access\Response
+    {
+        return $user->id === $userDocument->user_id
+            ? \Illuminate\Auth\Access\Response::allow()
+            : \Illuminate\Auth\Access\Response::denyAsNotFound();
+    }
+
     /**
      * Determine whether the user can create models.
      *

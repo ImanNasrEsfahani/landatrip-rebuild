@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\APIFileUploadController;
+use App\Http\Controllers\Api\PrivateDocumentDownloadController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\TestCheckoutController;
 use App\Http\Controllers\Api\UserFollowController;
@@ -68,6 +69,11 @@ Route::name("api.public.")->group(function () {
     Route::middleware('auth:sanctum')->group(function (){
         // Panels are in their folders
         // Please add only common api routes here.
+
+        Route::get('documents/{userDocument}/download', PrivateDocumentDownloadController::class)
+            ->whereNumber('userDocument')
+            ->middleware('can:downloadPrivate,userDocument')
+            ->name('documents.download');
 
         Route::post('origin-search', [BookingController::class, 'originSearch'])->name("origin-search");
 
