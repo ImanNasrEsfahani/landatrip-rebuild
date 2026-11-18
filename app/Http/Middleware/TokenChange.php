@@ -21,7 +21,6 @@ class TokenChange
             $request->headers->remove('token');
         }
 
-        info("request in test api: " . serialize($request->header()));
         return $next($request);
     }
 }
