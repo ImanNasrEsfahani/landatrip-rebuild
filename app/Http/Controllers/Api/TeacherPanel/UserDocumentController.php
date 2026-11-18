@@ -84,7 +84,7 @@ class UserDocumentController extends Controller
      * @param UserDocument $userDocument
      * @return void
      */
-    public function update(Request $request, UserDocument $userDocument)
+    public function update(Request $request, UserDocument $document)
     {
         //
     }
@@ -95,8 +95,8 @@ class UserDocumentController extends Controller
      * @param UserDocument $userDocument
      * @return bool
      */
-    public function destroy(UserDocument $userDocument)
+    public function destroy(UserDocument $document)
     {
-        return $userDocument->delete();
+        return $document->delete();
     }
 }

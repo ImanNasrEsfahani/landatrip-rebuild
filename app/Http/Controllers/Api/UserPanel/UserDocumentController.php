@@ -86,14 +86,20 @@ class UserDocumentController extends Controller
      * @return bool
      * @throws Throwable
      */
-    public function update(StoreUserDocumentRequest $request, UserDocument $userDocument): bool
+    public function update(StoreUserDocumentRequest $request, UserDocument $document): bool
     {
-        $tempObj = TemporaryFiles::find($request->validated("file"));
-        $userDocument->updateOrFail($request->validated());
+        $tempObj = TemporaryFiles::findOrFail($request->validated("file"));
         $dest = "users/documents/";
         $tempFilesPath = "tmp-files/";
-        Storage::disk('public')->move($tempFilesPath. $tempObj->name, $dest.$tempObj->name);
-        return $userDocument->save();
+        abort_unless(Storage::disk('public')->exists($tempFilesPath.$tempObj->name), 404);
+        abort_unless(Storage::disk('public')->move($tempFilesPath.$tempObj->name, $dest.$tempObj->name), 500);
+        $document->updateOrFail([
+            'title' => $request->validated('title'),
+            'type' => $tempObj->type,
+            'file' => $tempObj->name,
+        ]);
+
+        return true;
     }
 
     /**
@@ -103,8 +109,8 @@ class UserDocumentController extends Controller
      * @return bool
      * @throws Throwable
      */
-    public function destroy(UserDocument $userDocument)
+    public function destroy(UserDocument $document)
     {
-        return $userDocument->deleteOrFail();
+        return $document->deleteOrFail();
     }
 }
