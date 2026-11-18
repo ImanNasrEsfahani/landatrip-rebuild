@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Application\v1\ClientApp\TicketRecordsResource;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TicketRecordsController extends Controller
 {
@@ -16,6 +17,8 @@ class TicketRecordsController extends Controller
      */
     public function index(Ticket $ticket)
     {
+        Gate::authorize('viewMobileRecords', $ticket);
+
         return TicketRecordsResource::collection($ticket->records()->get());
     }
 
