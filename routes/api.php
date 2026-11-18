@@ -70,6 +70,9 @@ Route::name("api.public.")->group(function () {
         // Panels are in their folders
         // Please add only common api routes here.
 
+        Route::get('ticket-attachments/{image}/download', \App\Http\Controllers\Api\TicketAttachmentDownloadController::class)
+            ->name('ticket-attachments.download');
+
         Route::get('documents/{userDocument}/download', PrivateDocumentDownloadController::class)
             ->whereNumber('userDocument')
             ->middleware('can:downloadPrivate,userDocument')

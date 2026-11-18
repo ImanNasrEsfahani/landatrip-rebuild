@@ -55,12 +55,12 @@ class UserTicketRecordController extends Controller
             $record->user()->associate(auth()->user());
             $record->saveOrFail();
             if ($file) {
-                $record->images()->create(['url' => $file->name, 'image_type' => 'chat', 'alt' => 'Ticket attachment']);
+                $record->images()->create(['url' => $file->name, 'image_type' => 'chat', 'private_attachment' => true, 'alt' => 'Ticket attachment']);
             }
             return response()->json(200);
         };
         return $request->filled('image')
-            ? app(\App\Services\TemporaryUpload::class)->consume($request->validated('image'), 'users/chat', $save)
+            ? app(\App\Services\TemporaryUpload::class)->consume($request->validated('image'), 'ticket-attachments', $save, 'private')
             : $save();
     }
 
