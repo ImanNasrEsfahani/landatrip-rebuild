@@ -77,8 +77,8 @@ jobs:
         run: |
           php artisan --version
           php artisan route:list --json > /tmp/routes.json
-          test "$(jq length /tmp/routes.json)" -eq 350
-          test "$(jq '[.[] | select(.uri | startswith("api/"))] | length' /tmp/routes.json)" -eq 215
+          test "$(jq length /tmp/routes.json)" -eq 351
+          test "$(jq '[.[] | select(.uri | startswith("api/"))] | length' /tmp/routes.json)" -eq 216
           test "$(jq '[.[] | select(.uri | startswith("api/app/v1"))] | length' /tmp/routes.json)" -eq 49
 
       - name: Run migrations on MySQL 8

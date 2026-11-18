@@ -24,15 +24,15 @@ class MobileApiV1CompatibilityTest extends TestCase
             fn ($route) => in_array('auth:sanctum', $route->middleware(), true)
         );
 
-        $this->assertCount(34, $protectedRoutes);
-        $this->assertCount(15, $routes->reject(
+        $this->assertCount(35, $protectedRoutes);
+        $this->assertCount(14, $routes->reject(
             fn ($route) => in_array('auth:sanctum', $route->middleware(), true)
         ));
 
         $contracts = [
             ['POST', 'api/app/v1/login', false],
             ['POST', 'api/app/v1/sign-up', false],
-            ['POST', 'api/app/v1/file-upload', false],
+            ['POST', 'api/app/v1/file-upload', true],
             ['GET', 'api/app/v1/get', true],
             ['GET', 'api/app/v1/user', true],
             ['POST', 'api/app/v1/logout', true],
