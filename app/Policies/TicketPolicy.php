@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TicketPolicy
@@ -31,6 +32,21 @@ class TicketPolicy
     public function view(User $user, Ticket $ticket)
     {
         //
+    }
+
+    public function viewMobileRecords(User $user, Ticket $ticket): Response
+    {
+        if ($user->id === $ticket->user_id) {
+            return Response::allow();
+        }
+
+        // Tickets do not belong to a team. Only a global support admin may act as assignee.
+        if ($user->id === $ticket->assigned_agent_id
+            && $user->roles()->where('name', 'admin')->wherePivotNull('team_id')->exists()) {
+            return Response::allow();
+        }
+
+        return Response::denyAsNotFound();
     }
 
     /**
