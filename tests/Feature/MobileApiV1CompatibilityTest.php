@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
@@ -63,6 +64,8 @@ class MobileApiV1CompatibilityTest extends TestCase
 
     public function test_mobile_v1_rejects_missing_tokens_and_accepts_sanctum_tokens(): void
     {
+        Log::spy();
+
         $this->getJson('/api/app/v1/get')->assertUnauthorized();
 
         Event::fake();
@@ -87,5 +90,40 @@ class MobileApiV1CompatibilityTest extends TestCase
             ->getJson('/api/app/v1/get')
             ->assertOk()
             ->assertJson(['data', 'Salam']);
+
+        Log::shouldNotHaveReceived('info');
+    }
+
+    public function test_legacy_token_header_still_authenticates_without_logging_request_headers(): void
+    {
+        Log::spy();
+        Event::fake();
+        $user = User::query()->create([
+            'fname' => 'Legacy',
+            'lname' => 'Regression',
+            'slug' => 'legacy-mobile-regression',
+            'email' => 'legacy-mobile-regression@example.test',
+            'password' => 'not-used-by-this-test',
+            'sex' => 1,
+        ]);
+        $token = $user->createToken('mobile-v1-legacy-header')->plainTextToken;
+
+        $this->getJson('/api/app/v1/get', [
+            'token' => $token,
+            'Cookie' => 'phase11_fixture=synthetic',
+        ])->assertOk()->assertExactJson(['data', 'Salam']);
+
+        Log::shouldNotHaveReceived('info');
+    }
+
+    public function test_invalid_signup_preserves_validation_without_logging_the_payload(): void
+    {
+        Log::spy();
+
+        $this->postJson('/api/app/v1/sign-up', [
+            'password' => 'synthetic-invalid-signup-password',
+        ])->assertUnprocessable()->assertJsonValidationErrors(['fname', 'lname', 'email']);
+
+        Log::shouldNotHaveReceived('info');
     }
 }
