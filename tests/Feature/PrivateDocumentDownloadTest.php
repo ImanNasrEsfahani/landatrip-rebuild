@@ -48,6 +48,8 @@ class PrivateDocumentDownloadTest extends TestCase
         Storage::disk('private')->put('unrelated/file', 'Synthetic unrelated file');
 
         $this->actingAs($owner)->getJson("/api/documents/{$document->id}/download?file=unrelated/file")->assertNotFound();
+        $missingId = UserDocument::max('id') + 1;
+        $this->getJson("/api/documents/{$missingId}/download")->assertNotFound();
         $this->getJson('/api/documents/not-a-number/download')->assertNotFound();
     }
 
