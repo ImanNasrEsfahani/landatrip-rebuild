@@ -42,18 +42,12 @@ class UserDocumentController extends Controller
      */
     public function store(StoreUserDocumentRequest $request): bool
     {
-        $tempObj = TemporaryFiles::find($request->validated("file"));
-        $userDocumentObj = new UserDocument([
-            'user_id'   =>  auth()->user()->id,
-            "title"     =>  $request->validated("title"),
-            "type"      =>  $tempObj->type,
-            "file"      =>  $tempObj->name,
-            //"status"
-        ]);
-        $dest = "users/documents/";
-        $tempFilesPath = "tmp-files/";
-        Storage::disk('public')->move($tempFilesPath. $tempObj->name, $dest.$tempObj->name);
-        return $userDocumentObj->save();
+        return app(\App\Services\TemporaryUpload::class)->consume($request->validated('file'), 'users/documents', function ($file) use ($request) {
+            return UserDocument::create([
+                'user_id' => auth()->id(), 'title' => $request->validated('title'),
+                'type' => $file->type, 'file' => $file->name,
+            ])->exists;
+        });
     }
 
     /**
@@ -88,18 +82,11 @@ class UserDocumentController extends Controller
      */
     public function update(StoreUserDocumentRequest $request, UserDocument $document): bool
     {
-        $tempObj = TemporaryFiles::findOrFail($request->validated("file"));
-        $dest = "users/documents/";
-        $tempFilesPath = "tmp-files/";
-        abort_unless(Storage::disk('public')->exists($tempFilesPath.$tempObj->name), 404);
-        abort_unless(Storage::disk('public')->move($tempFilesPath.$tempObj->name, $dest.$tempObj->name), 500);
-        $document->updateOrFail([
-            'title' => $request->validated('title'),
-            'type' => $tempObj->type,
-            'file' => $tempObj->name,
-        ]);
-
-        return true;
+        return app(\App\Services\TemporaryUpload::class)->consume($request->validated('file'), 'users/documents', function ($file) use ($request, $document) {
+            return $document->updateOrFail([
+                'title' => $request->validated('title'), 'type' => $file->type, 'file' => $file->name,
+            ]);
+        });
     }
 
     /**

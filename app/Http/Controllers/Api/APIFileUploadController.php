@@ -32,16 +32,9 @@ class APIFileUploadController extends Controller
      */
     public function store (StoreTemporaryFileRequest $request): Response
     {
-        $file = $request->file('file');
-        $filename = time() . "-" . auth()->user()->id . "-" . (auth()->user()->fname ?? "") . "-" . (auth()->user()->lname ?? "") . "." . $file->extension();
-        $save = Storage::put("/public/tmp-files/{$filename}", file_get_contents($file));
-        if ($save) {
-            $tempFileObj = TemporaryFiles::create(['name' => $filename,
-                                                   "type" => $file->getClientMimeType(),
-                                                   "size" => $file->getSize()]);
-            return response($tempFileObj->id, 200, ['content-type' => 'text/plain']);
-        }
-        return abort("403", "The file has not saved.");
+        $request->validate(['file' => ['required', 'file']]);
+        $file = app(\App\Services\TemporaryUpload::class)->store($request->file('file'));
+        return response($file->id, 200, ['content-type' => 'text/plain']);
     }
 
     /**

@@ -41,18 +41,12 @@ class UserImageProfileController extends Controller
      */
     public function store(StoreUserImageProfileRequest $request)
     {
-        $tempObj = TemporaryFiles::find($request->validated("url"));
-//        $userProfileImage = new Image([
-//            'user_id'   =>  auth()->user()->id,
-//            "image_type"      =>  "profile",
-//            "url"      =>  $tempObj->name,
-//            //"status"
-//        ]);
-//        $dest = "user/profile/";
-        $tempFilesPath = "tmp-files/";
-        Storage::disk('public')->move($tempFilesPath. $tempObj->name, $dest.$tempObj->name);
-        return $userProfileImage->save();
-
+        return app(\App\Services\TemporaryUpload::class)->consume($request->validated('url'), 'users/profile', function ($file) {
+            abort_unless(in_array($file->type, ['image/jpeg', 'image/png', 'image/webp'], true), 422);
+            return auth()->user()->images()->updateOrCreate(['image_type' => 'profile'], [
+                'url' => $file->name, 'alt' => 'Profile image',
+            ])->exists;
+        });
     }
 
     /**

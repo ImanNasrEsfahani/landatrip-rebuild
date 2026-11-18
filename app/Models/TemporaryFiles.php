@@ -40,7 +40,7 @@ class TemporaryFiles extends BaseModel
     protected $fillable = [
         'name',
         'type',
-        'size'
+        'size', 'owner_id', 'expires_at', 'consumed_at'
     ];
 
     /**

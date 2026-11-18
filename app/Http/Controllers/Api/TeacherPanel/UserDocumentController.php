@@ -41,18 +41,12 @@ class UserDocumentController extends Controller
      */
     public function store(StoreTeacherDocumentRequest $request)
     {
-        $tempObj = TemporaryFiles::find($request->validated("file"));
-        $userDocumentObj = new UserDocument([
-            'user_id' => auth()->user()->id,
-            "title"   => $request->validated("title"),
-            "type"    => $tempObj->type,
-            "file"    => $tempObj->name,
-            //"status"
-        ]);
-        $dest = "users/documents/";
-        $tempFilesPath = "tmp-files/";
-        Storage::disk('public')->move($tempFilesPath . $tempObj->name, $dest . $tempObj->name);
-        return $userDocumentObj->save();
+        return app(\App\Services\TemporaryUpload::class)->consume($request->validated('file'), 'users/documents', function ($file) use ($request) {
+            return UserDocument::create([
+                'user_id' => auth()->id(), 'title' => $request->validated('title'),
+                'type' => $file->type, 'file' => $file->name,
+            ])->exists;
+        });
     }
 
     /**

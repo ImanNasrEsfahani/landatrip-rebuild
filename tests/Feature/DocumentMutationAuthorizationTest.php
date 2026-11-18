@@ -26,6 +26,7 @@ class DocumentMutationAuthorizationTest extends TestCase
     {
         Event::fake();
         Storage::fake('public');
+        Storage::fake('private');
         $owner = $this->user("$role-owner", $role);
         $other = $this->user("$role-other", $role);
         $document = UserDocument::create([
@@ -33,9 +34,11 @@ class DocumentMutationAuthorizationTest extends TestCase
             'type' => 'text/plain', 'file' => 'original.txt',
         ]);
         Storage::disk('public')->put('users/documents/original.txt', 'Synthetic original');
-        Storage::disk('public')->put('tmp-files/replacement.txt', 'Synthetic replacement');
+        $filename = '11111111-1111-4111-8111-111111111111.pdf';
+        Storage::disk('private')->put('temporary-uploads/'.$filename, 'Synthetic replacement');
         $temporary = TemporaryFiles::create([
-            'name' => 'replacement.txt', 'type' => 'text/plain', 'size' => '21',
+            'name' => $filename, 'type' => 'application/pdf', 'size' => '21',
+            'owner_id' => $owner->id, 'expires_at' => now()->addDay(),
         ]);
         $uri = "/api/web/v1/{$role}-panel/account-info/documents/{$document->id}";
         $payload = ['title' => 'Updated document', 'file' => $temporary->id];
@@ -51,7 +54,7 @@ class DocumentMutationAuthorizationTest extends TestCase
         $this->assertDatabaseHas('user_documents', [
             'id' => $document->id, 'user_id' => $owner->id,
             'title' => $role === 'user' ? 'Updated document' : 'Original document',
-            'file' => $role === 'user' ? 'replacement.txt' : 'original.txt',
+            'file' => $role === 'user' ? $filename : 'original.txt',
         ]);
         $this->deleteJson($uri)->assertOk();
         $this->assertDatabaseMissing('user_documents', ['id' => $document->id]);
