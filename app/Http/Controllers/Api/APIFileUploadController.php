@@ -19,9 +19,9 @@ class APIFileUploadController extends Controller
      *
      * @return Response
      */
-    public function index ()
+    public function index (Request $request)
     {
-        dd("index");
+        return $this->show($request);
     }
 
     /**
@@ -43,9 +43,19 @@ class APIFileUploadController extends Controller
      * @param int $id
      * @return Response
      */
-    public function show ($id)
+    public function show (Request $request)
     {
-        dd("show");
+        $input = $request->validate(['restore' => ['required', 'integer', 'min:1']]);
+        $file = TemporaryFiles::query()->whereKey($input['restore'])->where('owner_id', auth()->id())
+            ->where('expires_at', '>', now())->whereNull('consumed_at')->firstOrFail();
+        abort_unless(preg_match('/^[0-9a-f-]{36}\\.(jpg|jpeg|png|webp|pdf)$/D', $file->name), 404);
+        $disk = Storage::disk('private');
+        $path = 'temporary-uploads/'.$file->name;
+        abort_unless($disk->exists($path), 404);
+        return $disk->download($path, 'upload-'.$file->id, [
+            'Content-Type' => 'application/octet-stream', 'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
+        ]);
     }
 
     /**
@@ -77,9 +87,17 @@ class APIFileUploadController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy ($id)
+    public function destroy (Request $request, $temporary_file = null)
     {
-        dd("destroy");
+        $input = \Illuminate\Support\Facades\Validator::make(
+            ['id' => $temporary_file ?? trim($request->getContent())], ['id' => ['required', 'integer', 'min:1']]
+        )->validate();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($input) {
+            $file = TemporaryFiles::query()->whereKey($input['id'])->where('owner_id', auth()->id())
+                ->whereNull('consumed_at')->lockForUpdate()->firstOrFail();
+            $file->forceFill(['expires_at' => now()])->saveOrFail();
+        });
+        return response()->noContent();
     }
     /**
      * @param UpdateUserHeaderRequest $request
