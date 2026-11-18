@@ -92,21 +92,12 @@ class APIFileUploadController extends Controller
      */
     public function header(UpdateUserHeaderRequest $request):Response
     {
-        $file = $request->file('files');
-        $filename = time() . "-" . auth()->user()->id . "-" . (auth()->user()->fname ?? "") . "-" . (auth()->user()->lname ?? "") . "." . $file->extension();
-        $save = Storage::put("public/users/header/{$filename}", file_get_contents($file));
-        if ($save) {
-            $headerImageObj = Image::updateOrCreate([
-                'parentable_id'     =>  auth()->user()->id,
-                'parentable_type'   =>  User::class,
-                "image_type"   =>  "header"
-            ],
-                [
-                    "url"   =>  $filename,
-                    "alt"   =>  auth()->user()->name . " - " . config("name")
-                ]);
-            return response($headerImageObj->id, 200, ['content-type' => 'text/plain']);
-        }
-        return response("The file has not saved.", 403);
+        $upload = app(\App\Services\TemporaryUpload::class)->store($request->file('files'));
+        return app(\App\Services\TemporaryUpload::class)->consume($upload->id, 'users/header', function ($file) {
+            $image = Image::updateOrCreate([
+                'parentable_id' => auth()->id(), 'parentable_type' => User::class, 'image_type' => 'header',
+            ], ['url' => $file->name, 'alt' => auth()->user()->name.' - '.config('name')]);
+            return response($image->id, 200, ['content-type' => 'text/plain']);
+        });
     }
 }

@@ -24,7 +24,7 @@ class UpdateUserHeaderRequest extends FormRequest
     public function rules()
     {
         return [
-            'image' => ["max:30"],
+            'files' => ['required', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 }
