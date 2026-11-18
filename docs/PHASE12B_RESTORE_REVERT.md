@@ -1,0 +1,7 @@
+# Approved legacy restore/revert adapter contract
+
+The owner approved FilePond-style GET /api/files/upload?restore=<temporary-ID>, returning owner-only bytes, and DELETE /api/files/upload with the plain temporary-ID request body returning HTTP 204. The existing DELETE /api/temporary-file/{temporary_file} alias also expires that ID. Both identical GET declarations keep their names and delegate to the same restore handler; the route inventory is unchanged.
+
+Restore accepts only positive numeric IDs owned by the authenticated user, not expired or consumed, with server UUID filenames on private storage. It never accepts caller-selected paths or falls back to public files. A missing/legacy/other-owner/expired/consumed row or missing file returns 404; malformed IDs return 422. Response is attachment bytes, octet-stream, nosniff, private/no-store. Revert locks and expires only owned unconsumed rows; repeat cancellation is 204. Consumed or ownerless references return 404. No row, legacy file or new private source is deleted.
+
+Before repair the same GET route called show with no required id, and DELETE called destroy with no id or debug termination. Synthetic HTTP tests verify repair, unauthorized restore/cancel denial, validation, retained bytes/rows and resource-alias behavior. This owner decision supersedes the initial unknown-contract entries in PHASE12B_UPLOAD_CONTRACTS.md. No production migration or media cleanup is performed.
