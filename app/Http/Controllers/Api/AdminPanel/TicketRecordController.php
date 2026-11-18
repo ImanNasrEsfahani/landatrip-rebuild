@@ -11,6 +11,8 @@ use App\Models\TicketRecord;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class TicketRecordController extends Controller
 {
@@ -43,14 +45,21 @@ class TicketRecordController extends Controller
      */
     public function store(Ticket $ticket, StoreTicketRecordRequest $request)
     {
-        if(!$ticket->assignedUser()->first()) {
-            $ticket->assignedUser()->associate(auth()->user());
-            $ticket->save();
-        }
-        $ticketRecord = new TicketRecord($request->validated());
-        $ticketRecord->ticket()->associate($ticket);
-        $ticketRecord->user()->associate(auth()->user());
-        return $ticketRecord->save();
+        return DB::transaction(function () use ($ticket, $request) {
+            $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->id);
+            Gate::authorize('accessPanelSupportTicket', $lockedTicket);
+
+            if ($lockedTicket->assigned_agent_id === null) {
+                $lockedTicket->assignedUser()->associate($request->user());
+                $lockedTicket->save();
+            }
+
+            $ticketRecord = new TicketRecord($request->validated());
+            $ticketRecord->ticket()->associate($lockedTicket);
+            $ticketRecord->user()->associate($request->user());
+
+            return $ticketRecord->save();
+        });
     }
 
     /**

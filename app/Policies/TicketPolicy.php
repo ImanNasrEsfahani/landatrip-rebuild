@@ -91,4 +91,31 @@ class TicketPolicy
     {
         //
     }
+
+    public function accessPanelOwnerTicket(User $user, Ticket $ticket): \Illuminate\Auth\Access\Response
+    {
+        return $user->id === $ticket->user_id
+            ? \Illuminate\Auth\Access\Response::allow()
+            : \Illuminate\Auth\Access\Response::denyAsNotFound();
+    }
+
+    public function triagePanelTickets(User $user): bool
+    {
+        return $user->roles()->where('name', 'admin')->wherePivotNull('team_id')->exists();
+    }
+
+    public function accessPanelSupportTicket(User $user, Ticket $ticket): \Illuminate\Auth\Access\Response
+    {
+        return $this->triagePanelTickets($user)
+            && ($ticket->assigned_agent_id === null || $ticket->assigned_agent_id === $user->id)
+            ? \Illuminate\Auth\Access\Response::allow()
+            : \Illuminate\Auth\Access\Response::denyAsNotFound();
+    }
+
+    public function managePanelAssignedTicket(User $user, Ticket $ticket): \Illuminate\Auth\Access\Response
+    {
+        return $ticket->assigned_agent_id === $user->id && $this->triagePanelTickets($user)
+            ? \Illuminate\Auth\Access\Response::allow()
+            : \Illuminate\Auth\Access\Response::denyAsNotFound();
+    }
 }

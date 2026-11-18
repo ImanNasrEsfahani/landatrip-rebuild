@@ -94,14 +94,16 @@ Route::middleware(['auth:sanctum', 'panel.role:user'])->name("api.web.v1.user-pa
     Route::post("book", [BookingController::class, 'originSearch'])->name("originSearch");
 
     // Ticket and sub ticket routes
-    Route::apiResource("ticket", UserTicketController::class)->only(["index", "show", "store"]);
+    Route::apiResource("ticket", UserTicketController::class)->only(["index", "show", "store"])
+        ->middlewareFor("show", "can:accessPanelOwnerTicket,ticket");
     Route::name("ticket.")->prefix("ticket")->group(function () {
         // Ticket Page
-        Route::post("{ticket}/rating", [UserTicketController::class, "ratingTicketRatingStore"])->name("rating.update");
-        Route::post("{ticket}/closing", [UserTicketController::class, "closeTicketByUser"])->name("closing.update");
+        Route::post("{ticket}/rating", [UserTicketController::class, "ratingTicketRatingStore"])->middleware("can:accessPanelOwnerTicket,ticket")->name("rating.update");
+        Route::post("{ticket}/closing", [UserTicketController::class, "closeTicketByUser"])->middleware("can:accessPanelOwnerTicket,ticket")->name("closing.update");
 
         // Ticket Detail Page
-        Route::apiResource("{ticket}/record", UserTicketRecordController::class)->only(["index", "store"]);
+        Route::apiResource("{ticket}/record", UserTicketRecordController::class)->only(["index", "store"])
+            ->middleware("can:accessPanelOwnerTicket,ticket");
     });
     // Store in temporary files
     Route::apiResource("temporary-file",UserImageProfileTemporaryController::class)->only("store");

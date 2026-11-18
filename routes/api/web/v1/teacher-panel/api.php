@@ -68,12 +68,14 @@ Route::middleware(['auth:sanctum', 'panel.role:teacher'])->name("api.web.v1.teac
     Route::get("country/{country:slug}", [FindCitiesController::class, "show"])->name("find.cities");
 
     // Ticket and sub ticket routes
-    Route::apiResource("ticket", UserTicketController::class)->only(["index", "show", "store"]);
+    Route::apiResource("ticket", UserTicketController::class)->only(["index", "show", "store"])
+        ->middlewareFor("show", "can:accessPanelOwnerTicket,ticket");
     Route::name("ticket.")->prefix("ticket")->group(function () {
         // Ticket Page
-        Route::post("{ticket}/closing", [UserTicketController::class, "closeTicketByUser"])->name("closing.update");
+        Route::post("{ticket}/closing", [UserTicketController::class, "closeTicketByUser"])->middleware("can:accessPanelOwnerTicket,ticket")->name("closing.update");
 
         // Ticket Detail Page
-        Route::apiResource("{ticket}/record", UserTicketRecordController::class)->only(["index", "store"]);
+        Route::apiResource("{ticket}/record", UserTicketRecordController::class)->only(["index", "store"])
+            ->middleware("can:accessPanelOwnerTicket,ticket");
     });
 });

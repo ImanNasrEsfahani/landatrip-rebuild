@@ -98,7 +98,7 @@ class TicketController extends Controller
      */
     public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
-        return $ticket->update($request->validated());
+        return $ticket->update($request->safe()->only(['title', 'priority', 'status']));
     }
 
     /**
@@ -124,9 +124,14 @@ class TicketController extends Controller
 
     public function assignMe(Ticket $ticket)
     {
-        $ticket->assignedUser()->associate(auth()->user());
-        return $ticket->save();
-        return UnasignedTicketResource::collection(Ticket::where("status", "=", TicketStatusEnum::new)->get());
+        if ($ticket->assigned_agent_id === auth()->id()) {
+            return true;
+        }
+
+        abort_unless(Ticket::query()->whereKey($ticket->id)->whereNull('assigned_agent_id')
+            ->update(['assigned_agent_id' => auth()->id()]) === 1, 404);
+
+        return true;
     }
 
     /**
