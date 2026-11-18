@@ -25,6 +25,7 @@ class StoreTicketRequest extends FormRequest
     {
         return [
             "users"    => ["required", "array","min:1", "max:30"],
+            "users.*"  => ["required", "string", "distinct", "exists:users,id"],
             "title"    => ["required", "min:5", "max:30"],
             "priority"    => ["required", "min:0", "max:2"],
             "message" => ["required", "min:5"],
