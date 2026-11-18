@@ -32,7 +32,7 @@ class UpdateUserPersonalInformationRequest extends FormRequest
             "slug"            => ["required", "min:5", "max:150"],
             "sex"             => ["required", "min:0", "max:3", "numeric"],
             "about_me"        => ["required", "min:20", "max:550"],
-            "profile_picture" => ["max:30"]
+            "profile_picture" => ["nullable", "integer", "min:1"]
         ];
     }
 }

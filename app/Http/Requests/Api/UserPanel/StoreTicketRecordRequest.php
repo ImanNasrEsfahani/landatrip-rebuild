@@ -25,7 +25,7 @@ class StoreTicketRecordRequest extends FormRequest
     {
         return [
             "message"      =>  ["required", "min:1", "max:550"],
-            "image"        =>  ["max:30"]
+            "image"        =>  ["nullable", "integer", "min:1"]
 
         ];
     }

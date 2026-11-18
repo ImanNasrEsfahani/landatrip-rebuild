@@ -77,26 +77,19 @@ class UserController extends Controller
      */
     public function update(UpdateUserPersonalInformationRequest $request)
     {
-        auth()->user()->update($request->validated());
-        $tempObj = TemporaryFiles::find($request->validated("profile_picture"));
-
-        if($tempObj) {
-            $moved = Storage::disk('public')->move("tmp-files/" . $tempObj->name, "/users/profile/" . $tempObj->name);
-            if($moved) {
-                $tempObj->delete();
-                $imageObj = Image::updateOrCreate([
-                    'parentable_id'     =>  auth()->user()->id,
-                    'parentable_type'   =>  User::class
-                ],
-                    [
-                        "url"   =>  $tempObj->name,
-                        "image_type"   =>  "profile",
-                        "alt"   =>  auth()->user()->name . " - " . config("name")
-                    ]);
-                auth()->user()->images()->save($imageObj);
+        $save = function ($file = null) use ($request) {
+            auth()->user()->update($request->safe()->except('profile_picture'));
+            if ($file) {
+                abort_unless(in_array($file->type, ['image/jpeg', 'image/png', 'image/webp'], true), 422);
+                auth()->user()->images()->updateOrCreate(['image_type' => 'profile'], [
+                    'url' => $file->name, 'alt' => 'Profile image',
+                ]);
             }
-        }
-        return \response()->json(200);
+            return response()->json(200);
+        };
+        return $request->filled('profile_picture')
+            ? app(\App\Services\TemporaryUpload::class)->consume($request->validated('profile_picture'), 'users/profile', $save)
+            : $save();
     }
 
     /**

@@ -24,7 +24,7 @@ class StoreUserImageProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            "url" => ["image", "mimes:jpg,png,jpeg", "max:2048"]
+            "url" => ["required", "integer", "min:1"]
         ];
     }
 }

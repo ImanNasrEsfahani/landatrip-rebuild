@@ -49,25 +49,19 @@ class UserTicketRecordController extends Controller
      */
     public function store(Ticket $ticket, StoreTicketRecordRequest $request)
     {
-        $ticketRecord = new TicketRecord($request->validated());
-        $ticketRecord->ticket()->associate($ticket);
-        $ticketRecord->user()->associate(auth()->user());
-        $ticketRecord->save();
-        $tempObj = TemporaryFiles::find($request->validated("image"));
-        if($tempObj) {
-            $moved = Storage::disk('public')->move("tmp-files/" . $tempObj->name, "/users/chat/" . $tempObj->name);
-            if($moved) {
-                $tempObj->delete();
-                $imageObj = new Image(
-                    [
-                        "url"   =>  $tempObj->name,
-                        "image_type"   =>  "chat",
-                        "alt"   =>  auth()->user()->name . " - " . config("name")
-                    ]);
-                $ticketRecord->images()->save($imageObj);
+        $save = function ($file = null) use ($request, $ticket) {
+            $record = new TicketRecord(['message' => $request->validated('message')]);
+            $record->ticket()->associate($ticket);
+            $record->user()->associate(auth()->user());
+            $record->saveOrFail();
+            if ($file) {
+                $record->images()->create(['url' => $file->name, 'image_type' => 'chat', 'alt' => 'Ticket attachment']);
             }
-        }
-        return \response()->json(200);
+            return response()->json(200);
+        };
+        return $request->filled('image')
+            ? app(\App\Services\TemporaryUpload::class)->consume($request->validated('image'), 'users/chat', $save)
+            : $save();
     }
 
     /**
