@@ -59,7 +59,8 @@ Route::middleware(['auth:sanctum', 'panel.role:teacher'])->name("api.web.v1.teac
 
 
     Route::apiResource("groups", GroupController::class)->only(["index"]);
-    Route::apiResource("tours", TourController::class)->only(["index", "store", "show", "update"]);
+    Route::get('tours/{tour:id}/edit-data', [TourController::class, 'editData'])->name('tours.edit-data');
+    Route::apiResource("tours", TourController::class)->only(["index", "store", "show", "update"])->scoped(['tour' => 'id']);
     Route::apiResource("locations", LocationController::class)->only(["index"]);
 
 //    Route::apiResource("activities", ActivityController::class)->only(["index"]);

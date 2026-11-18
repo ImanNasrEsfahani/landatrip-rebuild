@@ -3,44 +3,45 @@
 namespace App\Http\Requests\Api\TeacherPanel;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTeacherTourRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
-            "title"                   => ["required", "min:3", "max:250"],
-            "subtitle"                => ["required", "min:3", "max:250"],
-            "tour_overview"           => ["required", "min:3", "max:250"],
-            "location_id"             => ["required", "min:1", "max:4"],
-            "transport"               => ["required", "min:3", "max:20"],
-            "short_summary"           => ["required", "min:3", "max:250"],
-            "evaluation_type"         => ["required", "min:3", "max:250"],
-            "min_score"               => [],
-            "age"                     => ["array"],
-            "skills.*"                => ["required", "min:3", "max:25"],
-            "highlights.*.title"       => ["required", "min:3", "max:25"],
-            "includes.*.title"         => ["required", "min:3", "max:25"],
-            "excludes.*.title"         => ["required", "min:3", "max:25"],
-            "itineraries.*.title" => ["required", "min:3", "max:25"],
-            "itineraries.*.description"  => ["required", "min:3", "max:25"],
-            "itineraries.*.start"     => [],
-            "itineraries.*.end"       => [],
+            // No ownership/issuance eligibility mapping exists for global templates yet.
+            'certification_id' => ['nullable', Rule::prohibitedIf(fn () => $this->filled('certification_id'))],
+            'title' => ['required', 'string', 'min:3', 'max:250'],
+            'subtitle' => ['required', 'string', 'min:3', 'max:250'],
+            'tour_overview' => ['required', 'string', 'min:3', 'max:250', 'not_regex:/[<>]/'],
+            // The active city autocomplete sends its city ID under this legacy key.
+            'location_id' => ['required', 'integer', 'min:1', 'exists:cities,id'],
+            'transport' => ['nullable', 'string', 'min:3', 'max:20'],
+            'short_summary' => ['required', 'string', 'min:3', 'max:250'],
+            'evaluation_type' => ['required', Rule::in(['noEvaluation', 'finalInterview', 'project', 'paperBased'])],
+            'min_score' => ['nullable', 'string', 'max:250'],
+            'age' => ['required', 'array', 'size:2'],
+            'age.0' => ['required', 'integer', 'min:1', 'max:99'],
+            'age.1' => ['required', 'integer', 'gte:age.0', 'max:99'],
+            'skills' => ['sometimes', 'array', 'max:50'],
+            'skills.*' => ['required', 'string', 'min:3', 'max:25'],
+            'highlights' => ['sometimes', 'array', 'max:50'],
+            'highlights.*.title' => ['required', 'string', 'min:3', 'max:25'],
+            'includes' => ['sometimes', 'array', 'max:50'],
+            'includes.*.title' => ['required', 'string', 'min:3', 'max:25'],
+            'excludes' => ['sometimes', 'array', 'max:50'],
+            'excludes.*.title' => ['required', 'string', 'min:3', 'max:25'],
+            'itineraries' => ['required', 'array', 'min:1', 'max:50'],
+            'itineraries.*.title' => ['required', 'string', 'min:3', 'max:25'],
+            'itineraries.*.description' => ['required', 'string', 'min:3', 'max:25', 'not_regex:/[<>]/'],
+            'itineraries.*.start' => ['required', 'integer', 'min:1', 'max:50'],
+            'itineraries.*.end' => ['required', 'integer', 'gte:itineraries.*.start', 'max:50'],
         ];
     }
 }

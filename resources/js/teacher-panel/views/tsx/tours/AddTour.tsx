@@ -68,12 +68,12 @@ type tourItem = {
     tour_overview: string;
     skills: object;
     city: string;
-    age: [];
+    age: number[];
     location_id: string;
     transport: string;
-    highlights: { item: string }[];
-    includes: { item: string }[];
-    excludes: { item: string }[];
+    highlights: { title: string }[];
+    includes: { title: string }[];
+    excludes: { title: string }[];
     itineraries: {
         id: number;
         title: string;
@@ -92,7 +92,16 @@ const AddTour = () => {
     const { register, control, handleSubmit, setValue } = useForm<tourItem>();
 
     const onSubmit: SubmitHandler<tourItem> = (data: object) => {
-        postTour.mutate(data);
+        postTour.mutate({
+            ...data,
+            age: valueRange,
+            evaluation_type: (data as tourItem).evaluation_type ?? "noEvaluation",
+            min_score: (data as tourItem).min_score ?? null,
+            highlights: highlightsList,
+            includes: includesList,
+            excludes: excludesList,
+            itineraries: itIneraries,
+        });
     };
     const postTour = useMutation(async (data: object) => {
         const response = await axios.post(
@@ -124,7 +133,7 @@ const AddTour = () => {
     const [valueRange, setValueRange] = React.useState<number[]>([20, 37]);
     const handleChangeRange = (event: Event, newValue: number | number[]) => {
         setValueRange(newValue as number[]);
-        setValue("age", valueRange);
+        setValue("age", newValue as number[]);
     };
     function valuetextRange(value: number) {
         return `${value}`;
@@ -359,7 +368,7 @@ const AddTour = () => {
         });
 
         setItIneraries(updatedPhases);
-        setValue("itineraries", itIneraries);
+        setValue("itineraries", updatedPhases);
     };
     //End Itineraries Function
 
@@ -919,7 +928,7 @@ const AddTour = () => {
                                             option.name
                                         }
                                         onChange={(event, values) =>
-                                            setValue("location_id", values.id)
+                                            setValue("location_id", values?.id ?? "")
                                         }
                                         renderInput={(params) => (
                                             <TextField
@@ -1772,6 +1781,7 @@ const AddTour = () => {
                         </Typography>
                         <Button
                             size="small"
+                            aria-label="Add itinerary days"
                             onClick={handleClickOpen}
                             // onClick={handleAddItIneraries}
                             variant="contained"
@@ -1859,7 +1869,7 @@ const AddTour = () => {
                                             </Grid>
                                             <Grid item xs={12}>
                                                 <TextField
-                                                    label="Describe Day2"
+                                                    label="Day description"
                                                     variant="outlined"
                                                     sx={{ width: "100%" }}
                                                     name="description"
@@ -2453,7 +2463,7 @@ const AddTour = () => {
                             </Button>
                         </Grid>
                         <Grid item>
-                            <Button
+                            <Button type="submit" disabled={postTour.isLoading}
                                 sx={{
                                     width: "188px",
                                     height: "36px",
@@ -2463,7 +2473,7 @@ const AddTour = () => {
                                 }}
                                 variant="contained"
                             >
-                                <Typography>Save Draft</Typography>
+                                <Typography>Save tour</Typography>
                             </Button>
                         </Grid>
                     </Grid>

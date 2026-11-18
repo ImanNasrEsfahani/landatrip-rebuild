@@ -1,0 +1,15 @@
+# Owner-approved partial teacher tour editing
+
+Depends on the creation PR. No active update caller existed: TourDescription's Edit button had no handler and the API update method terminated at dd. The owner approved a partial, non-destructive contract on the existing PUT/PATCH route and requested minimum frontend wiring.
+
+Only the authenticated tour owner with teacher-panel access may read edit data or update. Unauthorized requests fail before writes; the service locks and rechecks the owner. Existing teacher list links pass ULIDs, while Tour's global route key is slug. Teacher resource routes now explicitly bind IDs to match that verified frontend; public and mobile bindings are unchanged. Existing route names remain. One owner-only GET edit-data route is added (352 total / 217 API / 49 mobile v1).
+
+Every root field is optional. Omitted language, city, certificate, metadata, age and itinerary values stay unchanged. location_id remains the legacy city key; explicit language_id and location_id must exist. Owner/status/teacher identity cannot be supplied by the client. Includes/excludes/highlights are additive by exact title, never replacement lists. Empty arrays delete nothing.
+
+Itinerary entries with owned IDs may update only supplied attributes. IDs from another tour, duplicate IDs, invalid ranges and incomplete new entries fail validation. Entries without IDs append and require title/description/start/end. Omitted rows are retained. Effective range validation is repeated after row locking. Duration is recalculated only when a range changes or a day is appended, using the creation convention over all retained rows. Gap/overlap policy is not invented; legacy rows without ranges can receive text-only edits without guessing day bounds.
+
+All parent and related writes occur in one transaction. A failure on a later append rolls back earlier parent/day writes. No record reconciliation deletes and no media storage operations are used. Certificate changes fail closed because global template ownership and issuance eligibility cannot currently be verified; existing references remain unchanged. A separate issuance requirement/approval contract is still needed. Publication status is never changed by this teacher endpoint.
+
+The existing Edit button opens a small Material UI dialog for tour text and itinerary days. It submits only changed fields and changed/new days, supports append, and offers no implicit removal action. It uses the existing update route and keeps the page layout. New overview/day-description writes are plain text to avoid introducing stored markup through the new write path; legacy content is not rewritten.
+
+Regression tests cover ownership, GET authorization, sparse updates, several days, appending, omitted records, explicit location/language, invalid/cross-tour IDs, existing certificates/media and rollback. Browser coverage creates a synthetic pending tour, opens Edit, changes a day, appends another, and confirms an omitted day remains. No production migration, deletion or deployment.
