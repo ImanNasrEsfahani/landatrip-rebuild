@@ -33,8 +33,6 @@ class SignUpController extends Controller
      */
     public function create(Request $request)
     {
-        info("App sign up " . serialize($request->all()));
-
         Validator::make($request->all(), [
             'fname' => ['required', 'string', 'max:255'],
             'lname' => ['required', 'string', 'max:255'],
