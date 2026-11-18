@@ -20,7 +20,7 @@ class HotelResource extends JsonResource
 //        $lat = $json["geoCode"]["latitude"];
 //        $lng = $json["geoCode"]["longitude"];
 //        $latLng = $lat . "," . $lng;
-//        $googleKey = 'AIzaSyBro7Mv__QwKTI8BXIGtDZP6Q6cAIjKMUM';
+//        $googleKey = config('services.google.places_api_key');
 //        $client = new Client();
 //
 //        $response = $client->request('GET', 'https://maps.googleapis.com/maps/api/place/textsearch/json', [

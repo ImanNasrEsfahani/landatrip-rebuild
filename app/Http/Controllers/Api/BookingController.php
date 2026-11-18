@@ -150,7 +150,8 @@ class BookingController extends Controller
     public function googleApi()
     {
         $client = new Client();
-        $apiKey = 'AIzaSyBro7Mv__QwKTI8BXIGtDZP6Q6cAIjKMUM';
+        $apiKey = config('services.google.places_api_key');
+        abort_if(! $apiKey, 503, 'Google Places is not configured.');
         $placeId = 'ChIJGyD_--Zx5kcRVR9P2KquU0A';
 
         $response = $client->get("https://maps.googleapis.com/maps/api/place/details/json", [
