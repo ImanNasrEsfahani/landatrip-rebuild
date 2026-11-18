@@ -35,7 +35,10 @@ export default function Conversation() {
     const Data = useSelector(state => state.information);
 
     useEffect(() => {
-        window.Echo.private(`chat.${Id}`)
+        if (!Id) return;
+
+        const channel = `chat.${Id}`;
+        window.Echo.private(channel)
             .listen('MessageEvent', (data) => {
                 setChat(prev => {
                     return {
@@ -47,23 +50,22 @@ export default function Conversation() {
                     }
                 })
             });
+
+        return () => { window.Echo.leave(channel); };
     }, [Id]);
 
     useEffect(() => {
-        window.Echo.private(`list-channel`)
-            .listen('ListEvent', (data) => {
-                let filtered = lists.filter((item) => item.communication_id !== data.assign.communication_id);
-                if (Data.user_id === data.userId) {
-                    filtered.push(data.assign);
-                    setLists(filtered)
-                }
-                if (Data.user_id === data.assignId) {
-                    filtered.push(data.user);
-                    setLists(filtered)
-                }
+        if (!Data.user_id) return;
 
-            })
-    }, [Data.user_id, lists]);
+        const channel = `list-channel.${Data.user_id}`;
+        window.Echo.private(channel)
+            .listen('ListEvent', (data) => {
+                const entry = Data.user_id === data.userId ? data.assign : data.user;
+                setLists(current => current.filter(item => item.communication_id !== entry.communication_id).concat(entry));
+            });
+
+        return () => { window.Echo.leave(channel); };
+    }, [Data.user_id]);
 
 
     const handleId = (child) => {
@@ -150,7 +152,8 @@ export default function Conversation() {
     }, [lists])
 
     const back = () => {
-        setChat([])
+        setChat([]);
+        setId(undefined);
     }
 
     if (conversation.isLoading) {

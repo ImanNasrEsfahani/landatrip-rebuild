@@ -98,7 +98,7 @@ class ConversationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreCommunicationRecordRequest $request, $conversation)
+    public function update(StoreCommunicationRecordRequest $request, Conversation $conversation)
     {
         $communicationRecordObj = new ConversationRecord($request->validated());
         $communicationRecordObj->conversation()->associate($conversation);
