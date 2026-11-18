@@ -130,6 +130,19 @@ class PanelTicketAuthorizationTest extends TestCase
         $this->assertDatabaseMissing('tickets', ['title' => $payload['title'], 'user_id' => $unselected->id]);
     }
 
+    public function test_ticket_recipient_search_requires_global_support_role(): void
+    {
+        Event::fake();
+        $this->user('recipient', 'user');
+        $teamAdmin = $this->user('team-admin', 'admin', true);
+        $globalAdmin = $this->user('global-admin', 'admin');
+        $uri = '/api/web/v1/admin-panel/ticket/search';
+
+        $this->actingAs($teamAdmin)->postJson($uri, ['keyword' => 'Synthetic'])->assertForbidden();
+        $this->actingAs($globalAdmin)->postJson($uri, ['keyword' => 'Synthetic'])
+            ->assertOk()->assertJsonFragment(['short_label' => 'Synthetic recipient']);
+    }
+
     private function user(string $name, string $role, bool $teamOnly = false): User
     {
         $user = User::create([

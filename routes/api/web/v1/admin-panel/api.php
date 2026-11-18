@@ -42,7 +42,7 @@ Route::middleware(['auth:sanctum', 'panel.role:admin'])->name("api.web.v1.admin-
         Route::post("{ticket}/closing", [TicketController::class, "closeTicket"])->middleware("can:managePanelAssignedTicket,ticket")->name("closing.update");
 
         Route::get("archived", [TicketController::class, "archived"])->middleware("can:triagePanelTickets,".\App\Models\Ticket::class)->name("archived");
-        Route::post("search", [TicketController::class, "search"])->name("search");
+        Route::post("search", [TicketController::class, "search"])->middleware("can:triagePanelTickets,".\App\Models\Ticket::class)->name("search");
         Route::get("unassigned", [TicketController::class, "unassigned"])->middleware("can:triagePanelTickets,".\App\Models\Ticket::class)->name("unassigned");
         //Route::post("search", function () {})->name("search");
     });
