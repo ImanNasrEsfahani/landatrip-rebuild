@@ -17,7 +17,7 @@ class CountryListController extends Controller
      */
     public function index()
     {
-        return CountryListResource::collection(Country::where("language_id", "=", 1)->get());
+        return CountryListResource::collection(Country::query()->orderBy('name')->orderBy('id')->get());
     }
 
     /**
