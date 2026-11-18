@@ -41,6 +41,9 @@ class ListEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('list-channel');
+        return array_map(
+            fn ($userId) => new PrivateChannel('list-channel.'.$userId),
+            array_unique([$this->userId, $this->assignId]),
+        );
     }
 }
