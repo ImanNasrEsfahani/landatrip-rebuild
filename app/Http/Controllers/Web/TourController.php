@@ -30,11 +30,10 @@ class TourController extends Controller
     {
         $input = $request->validate(['q' => ['nullable', 'string', 'max:100'], 'page' => ['nullable', 'integer', 'min:1']]);
         $search = trim($input['q'] ?? '');
-        $query = Tour::approved()->whereHas('language', fn ($query) => $query->where('slug', app()->getLocale()))
+        $query = Tour::publiclyVisible()
             ->select(['id', 'title', 'slug', 'short_summary'])
             ->withCount(['groups as public_groups_count' => fn ($query) => $query
-                ->whereNotIn('status', [GroupStatusEnum::draft, GroupStatusEnum::canceled])
-                ->whereHas('language', fn ($query) => $query->where('slug', app()->getLocale()))]);
+                ->publiclyVisible()]);
         if ($search !== '') {
             $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search);
             $query->where('title', 'like', '%'.$escaped.'%');
@@ -81,9 +80,9 @@ class TourController extends Controller
      */
     public function show(Tour $tour)
     {
-//        dd($tour);
+        abort_unless(Tour::publiclyVisible()->whereKey($tour->id)->exists(), 404);
         if(app()->getLocale() === $tour->language()->first()->slug) {
-            $lastGroup = $tour->groups()->latest()->first();
+            $lastGroup = $tour->groups()->publiclyVisible()->latest()->orderByDesc('id')->firstOrFail();
             $tourComments = $tour->tourComments()->where('verify_at', "!=", null)->get();
             return view("tour.tour")->with('tour', $tour)->with('lastGroup', $lastGroup)->with('tourComments', $tourComments);
         }
@@ -133,8 +132,8 @@ class TourController extends Controller
      */
     public function booking($tour, $tourOperation)
     {
-        $tour = Tour::where('slug', $tour)->firstOrFail();
-        $group = $tour->groups()->findOrFail($tourOperation);
+        $tour = Tour::publiclyVisible()->where('slug', $tour)->firstOrFail();
+        $group = $tour->groups()->publiclyVisible()->findOrFail($tourOperation);
         abort_unless($group->public && $group->status->value === GroupStatusEnum::registration
             && now()->toDateString() >= $group->start_registration_date
             && now()->toDateString() <= $group->end_registration_date

@@ -130,6 +130,11 @@ class Tour extends BaseModel
         return $query->where('status', TourStatusEnums::approved);
     }
 
+    public function scopePubliclyVisible($query)
+    {
+        return $query->approved()->whereHas('language', fn ($language) => $language->where('slug', app()->getLocale()));
+    }
+
     /**
      * @return void
      */

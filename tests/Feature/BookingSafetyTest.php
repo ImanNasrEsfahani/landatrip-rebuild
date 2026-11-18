@@ -30,7 +30,7 @@ class BookingSafetyTest extends TestCase
             'teacher_name' => 'Fixture', 'language_id' => 1,
             'title' => 'Booking Fixture', 'slug' => 'booking-fixture',
             'short_summary' => 'Fixture', 'city_id' => 1,
-            'tour_overview' => 'Fixture',
+            'tour_overview' => 'Fixture', 'status' => 2,
         ]);
         $groupId = (string) Str::ulid();
         DB::table('groups')->insert([

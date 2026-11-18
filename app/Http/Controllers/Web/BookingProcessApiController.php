@@ -53,6 +53,8 @@ class BookingProcessApiController extends Controller
     public function show(Tour $tour, Group $group)
     {
         abort_unless($group->tour_id === $tour->id, 404);
+        abort_unless(Tour::publiclyVisible()->whereKey($tour->id)->exists()
+            && $tour->groups()->publiclyVisible()->whereKey($group->id)->exists(), 404);
         abort_unless($group->public, 404);
         return new BookingProcessApiResource($group->load(['priceItems.currency', 'tour.city.country']));
     }

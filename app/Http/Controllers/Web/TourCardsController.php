@@ -50,7 +50,8 @@ class TourCardsController extends Controller
      */
     public function show(Tour $tour)
     {
-        return TourCardsResource::collection($tour->groups()->get());
+        abort_unless(Tour::publiclyVisible()->whereKey($tour->id)->exists(), 404);
+        return TourCardsResource::collection($tour->groups()->publiclyVisible()->orderBy('created_at')->orderBy('id')->get());
     }
 
     /**
