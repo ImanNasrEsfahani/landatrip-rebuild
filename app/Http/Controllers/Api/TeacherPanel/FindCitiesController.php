@@ -51,7 +51,7 @@ class FindCitiesController extends Controller
      */
     public function show(Country $country)
     {
-        return FindCitiesResource::collection(City::where("country_id", "=", $country->id)->where("language_id", "=", 1)->get());
+        return FindCitiesResource::collection(City::where('country_id', $country->id)->orderBy('name')->orderBy('id')->get());
     }
 
     /**
