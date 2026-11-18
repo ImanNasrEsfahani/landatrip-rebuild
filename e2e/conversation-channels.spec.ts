@@ -28,7 +28,9 @@ test('conversation view subscribes only to active channels and leaves them on na
         { communication_id: chatB, assign_name: 'Fixture Beta', role: 'user', time: 'now' },
       ] } });
     } else {
-      await route.fulfill({ json: { data: { communication_id: pathname.split('/').at(-1), data: [] } } });
+      await route.fulfill({ json: {
+        communication_id: pathname.split('/').at(-1), name: 'Fixture contact', role: 'user', data: [],
+      } });
     }
   });
 
