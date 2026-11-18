@@ -87,19 +87,9 @@ class TourController extends Controller
     }
     public function uploadFileToCloud(Request $request)
     {
-//        dd(Storage::disk('gcs')->allFiles());
-            $file = $request->file('file');
-//            $filename = time() . "-" . auth()->user()->id . "-" . (auth()->user()->fname ?? "") . "-" . (auth()->user()->lname ?? "") . "." . $file->extension();
-            $filename = time() . "." . $file->extension();
-//            $storeFile = $file->storeAs("test", $file_name, "gcs");
-            $disk = Storage::put("/public/tmp-files/{$filename}", file_get_contents($file));
-            dd($disk);
-            $fetchFile = $disk->url($storeFile);
-
-
-        return response()->json([
-            'data' => $fetchFile,
-        ], 201);
+        $request->validate(['file' => ['required', 'file']]);
+        $file = app(\App\Services\TemporaryUpload::class)->store($request->file('file'));
+        return response()->json(['data' => route('api.public.mobile-uploads.download', ['temporaryFile' => $file->id])], 201);
     }
     /**
      * Store a newly created resource in storage.

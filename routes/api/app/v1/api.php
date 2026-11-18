@@ -72,7 +72,7 @@ Route::name("api.app.v1.")->middleware("api")->group(function () {
     Route::get("error/500",function (){
         return response()->json("Internal Server Error", 500);
     });
-    Route::post("file-upload",[TourController::class, "uploadFileToCloud"]);
+    Route::post("file-upload",[TourController::class, "uploadFileToCloud"])->middleware('auth:sanctum');
 
     Route::get('/example', function (Illuminate\Http\Request $request) {
         // You can now use the $request object here
