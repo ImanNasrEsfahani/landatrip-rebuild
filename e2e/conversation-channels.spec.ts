@@ -36,10 +36,14 @@ test('conversation view subscribes only to active channels and leaves them on na
 
   await login(page, 'user');
   await expect(page).toHaveURL(/\/user-panel(?:\/|$)/);
-  const userInfo = page.waitForResponse(response =>
-    new URL(response.url()).pathname === '/api/web/v1/user-panel/user-info' && response.ok());
-  await page.reload();
-  const { data } = await (await userInfo).json();
+  const data = await page.evaluate(async () => {
+    const response = await fetch('/api/web/v1/user-panel/user-info', {
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+    });
+    if (!response.ok) throw new Error(`User info request returned ${response.status}`);
+    return (await response.json()).data;
+  });
   await page.goto('/user-panel/conversation');
   const listChannel = `list-channel.${data.user_id}`;
   const events = () => page.evaluate(() =>
