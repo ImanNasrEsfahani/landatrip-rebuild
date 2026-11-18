@@ -13,7 +13,7 @@ if (document.getElementById("booking-tour")) {
 
 
 if (document.getElementById("tour_filter")) {
-    createRoot(document.getElementById("tour_filter")).render(<Filter/>)
+    createRoot(document.getElementById("tour_filter")).render(<Filter listing={JSON.parse(document.getElementById("tour-list-data").textContent)}/>)
 }
 
 
