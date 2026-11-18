@@ -133,14 +133,14 @@ class PanelTicketAuthorizationTest extends TestCase
     public function test_ticket_recipient_search_requires_global_support_role(): void
     {
         Event::fake();
-        $this->user('recipient', 'user');
+        $recipient = $this->user('recipient', 'user');
         $teamAdmin = $this->user('team-admin', 'admin', true);
         $globalAdmin = $this->user('global-admin', 'admin');
         $uri = '/api/web/v1/admin-panel/ticket/search';
 
         $this->actingAs($teamAdmin)->postJson($uri, ['keyword' => 'Synthetic'])->assertForbidden();
         $this->actingAs($globalAdmin)->postJson($uri, ['keyword' => 'Synthetic'])
-            ->assertOk()->assertJsonFragment(['short_label' => 'Synthetic recipient']);
+            ->assertOk()->assertJsonFragment(['id' => $recipient->id]);
     }
 
     private function user(string $name, string $role, bool $teamOnly = false): User
