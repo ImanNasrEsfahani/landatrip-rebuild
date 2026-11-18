@@ -37,6 +37,11 @@ class APIFileUploadController extends Controller
         return response($file->id, 200, ['content-type' => 'text/plain']);
     }
 
+    public function tempStore(StoreTemporaryFileRequest $request): Response
+    {
+        return $this->store($request);
+    }
+
     /**
      * Display the specified resource.
      *
