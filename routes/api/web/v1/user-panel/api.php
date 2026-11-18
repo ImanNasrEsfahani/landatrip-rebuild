@@ -69,7 +69,8 @@ Route::middleware(['auth:sanctum', 'panel.role:user'])->name("api.web.v1.user-pa
 
         Route::get("country/{country:slug}", [FindCitiesController::class, "show"])->name("find.cities");
     });
-    Route::apiResource("conversation" , ConversationController::class)->only("index","store","show","update");
+    Route::apiResource("conversation" , ConversationController::class)->only("index","store","show","update")
+        ->middlewareFor(["show", "update"], "can:view,conversation");
 
     Route::get("conversation/role/{role}",[ConversationController::class,"tabs"])->name("tabs");
 
