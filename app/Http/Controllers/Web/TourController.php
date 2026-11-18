@@ -26,9 +26,30 @@ class TourController extends Controller
      *
      * @return void
      */
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        return view('tour-filter.tour-filter');
+        $input = $request->validate(['q' => ['nullable', 'string', 'max:100'], 'page' => ['nullable', 'integer', 'min:1']]);
+        $search = trim($input['q'] ?? '');
+        $query = Tour::approved()->whereHas('language', fn ($query) => $query->where('slug', app()->getLocale()))
+            ->select(['id', 'title', 'slug', 'short_summary'])
+            ->withCount(['groups as public_groups_count' => fn ($query) => $query
+                ->whereNotIn('status', [GroupStatusEnum::draft, GroupStatusEnum::canceled])
+                ->whereHas('language', fn ($query) => $query->where('slug', app()->getLocale()))]);
+        if ($search !== '') {
+            $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search);
+            $query->where('title', 'like', '%'.$escaped.'%');
+        }
+        $tours = $query->orderBy('title')->orderBy('id')->paginate(12)->appends(['q' => $search]);
+        $listing = [
+            'items' => $tours->getCollection()->map(fn ($tour) => [
+                'id' => $tour->id, 'title' => $tour->title, 'summary' => $tour->short_summary,
+                'groups' => $tour->public_groups_count,
+                'url' => $tour->public_groups_count > 0 ? route('tour.show', $tour->slug) : null,
+            ]),
+            'q' => $search, 'page' => $tours->currentPage(), 'total' => $tours->total(),
+            'previous' => $tours->previousPageUrl(), 'next' => $tours->nextPageUrl(),
+        ];
+        return view('tour-filter.tour-filter', compact('listing'));
     }
 
     /**
