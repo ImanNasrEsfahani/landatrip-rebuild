@@ -93,6 +93,26 @@ class PanelTicketAuthorizationTest extends TestCase
         ]);
     }
 
+    public function test_support_creates_tickets_only_for_the_selected_recipients(): void
+    {
+        Event::fake();
+        $unselected = $this->user('unselected', 'user');
+        $recipient = $this->user('recipient', 'user');
+        $admin = $this->user('support', 'admin');
+        $payload = [
+            'users' => [$recipient->id],
+            'title' => 'Synthetic requested ticket',
+            'priority' => 1,
+            'message' => 'Synthetic requested message',
+        ];
+
+        $this->actingAs($admin)->postJson('/api/web/v1/admin-panel/tickets', $payload)->assertOk();
+        $this->assertDatabaseHas('tickets', [
+            'title' => $payload['title'], 'user_id' => $recipient->id, 'assigned_agent_id' => $admin->id,
+        ]);
+        $this->assertDatabaseMissing('tickets', ['title' => $payload['title'], 'user_id' => $unselected->id]);
+    }
+
     private function user(string $name, string $role, bool $teamOnly = false): User
     {
         $user = User::create([

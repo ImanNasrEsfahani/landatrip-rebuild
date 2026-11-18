@@ -18,6 +18,7 @@ use App\Models\TicketRecord;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
@@ -49,22 +50,21 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request)
     {
-        foreach ($request->validated("users") as $id) {
-            $userObj = User::find($id)->first();
-            $ticketObj = new Ticket([
-                'title'     =>  $request->validated("title")
-            ]);
-            $ticketObj->user()->associate($userObj->id);
-            $ticketObj->assignedUser()->associate(auth()->user());
-            $ticketObj->save();
+        return DB::transaction(function () use ($request) {
+            foreach ($request->validated('users') as $id) {
+                $recipient = User::findOrFail($id);
+                $ticket = new Ticket(['title' => $request->validated('title')]);
+                $ticket->user()->associate($recipient);
+                $ticket->assignedUser()->associate($request->user());
+                $ticket->save();
 
-            $ticketRecordObj = new TicketRecord([
-                'message'   =>  $request->validated('message')]);
-            $ticketRecordObj->ticket()->associate($ticketObj);
-            $ticketRecordObj->user()->associate(auth()->user());
-            $ticketRecordObj->save();
-        }
-        return true;
+                $record = new TicketRecord(['message' => $request->validated('message')]);
+                $record->user()->associate($request->user());
+                $ticket->records()->save($record);
+            }
+
+            return true;
+        });
     }
 
     /**
