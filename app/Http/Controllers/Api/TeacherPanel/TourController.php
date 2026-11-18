@@ -78,9 +78,22 @@ class TourController extends Controller
      *
      * @return Response
      */
-    public function update(Request $request, Tour $tour)
+    public function update(\App\Http\Requests\Api\TeacherPanel\UpdateTeacherTourRequest $request, Tour $tour)
     {
-        dd("Tour update");
+        return app(\App\Services\TeacherTourEditing::class)->update($request->user(), $tour, $request->validated());
+    }
+
+    public function editData(Tour $tour)
+    {
+        abort_unless($tour->user_id === auth()->id(), 403);
+        return response()->json(['data' => [
+            'id' => $tour->id, 'title' => $tour->title, 'subtitle' => $tour->subtitle,
+            'short_summary' => $tour->short_summary, 'tour_overview' => $tour->tour_overview,
+            'location_id' => $tour->city_id, 'location' => $tour->city?->name, 'language_id' => $tour->language_id,
+            'certification_id' => $tour->certification_id, 'age' => [$tour->min_age, $tour->max_age],
+            'itineraries' => $tour->tourItineraries()->get()->sortBy(fn ($row) => (int) $row->start)->values()
+                ->map(fn ($row) => collect($row)->only(['id', 'title', 'description', 'start', 'end'])),
+        ]]);
     }
 
     /**

@@ -1,3 +1,5 @@
+import TourEditDialog from "./TourEditDialog";
+import { Alert } from "@mui/material";
 import React from "react";
 import {Button, Box, CardActionArea} from "@mui/material";
 import {Link as LinkReact, useParams} from "react-router-dom";
@@ -27,6 +29,12 @@ import {route} from "../../../helpers";
 
 export default function TourDescription() {
     const params = useParams();
+    const [editOpen, setEditOpen] = React.useState(false);
+    const [saved, setSaved] = React.useState(false);
+    const editData = useQuery(['tour-edit', params.id], async () => {
+        const response = await axios.get(route('api.web.v1.teacher-panel.tours.edit-data', { tour: params.id }));
+        return response.data.data;
+    });
 
     const groupsRecords = useQuery("groupsRecords", async () => {
         const {data} = await axios.get(route("api.web.v1.teacher-panel.tours.show", {"tour": params.id}));
@@ -41,17 +49,21 @@ export default function TourDescription() {
     }
     return (
         <Box className="container" p={5}>
+            {saved && <Alert severity="success">Tour updated.</Alert>}
+            {editData.isError && <Alert severity="error">Unable to load this tour for editing.</Alert>}
+            {editData.data && <TourEditDialog open={editOpen} data={editData.data} onClose={() => setEditOpen(false)}
+                onSaved={() => { setEditOpen(false); setSaved(true); editData.refetch(); groupsRecords.refetch(); }}/>}
             <Box sx={{position: "relative"}}>
                 <img src={tourHeader} width="100%"/>
                 <Box sx={{position: "absolute", top: "35%", left: "10%"}}>
                     <Typography variant="h4" color="white">
-                        Desert tours
+                        {editData.data?.title ?? 'Tour'}
                     </Typography>
                     <Typography marginBottom="5" color="white" marginTop={1}>
-                        South America
+                        {editData.data?.location ?? ''}
                     </Typography>
                     {/*icon*/}
-                    <Button
+                    <Button onClick={() => { setSaved(false); setEditOpen(true); }} disabled={!editData.data}
                         sx={{
                             mx: 0,
                             mt: 2,
