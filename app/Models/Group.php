@@ -89,6 +89,13 @@ class Group extends BaseModel
     protected $guarded = ['id'];
 
 
+    public function scopePubliclyVisible($query)
+    {
+        return $query->where('public', true)
+            ->whereNotIn('status', [GroupStatusEnum::draft, GroupStatusEnum::canceled])
+            ->whereHas('language', fn ($language) => $language->where('slug', app()->getLocale()));
+    }
+
     /**
      * Get the route key for the model.
      *

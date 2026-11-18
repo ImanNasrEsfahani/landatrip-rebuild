@@ -23,6 +23,8 @@ class BookingProcessController extends Controller
      */
     public function step1(Tour $tour, Group $group) {
         abort_unless($group->tour_id === $tour->id, 404);
+        abort_unless(Tour::publiclyVisible()->whereKey($tour->id)->exists()
+            && $tour->groups()->publiclyVisible()->whereKey($group->id)->exists(), 404);
         abort_unless($group->public && $group->status->value === GroupStatusEnum::registration
             && now()->toDateString() >= $group->start_registration_date
             && now()->toDateString() <= $group->end_registration_date
