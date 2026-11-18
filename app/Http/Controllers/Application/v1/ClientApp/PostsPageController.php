@@ -18,8 +18,13 @@ class PostsPageController extends Controller
     public function index()
     {
         $followingUsers = auth()->user()->following()->with("userPosts")->get();
-        $posts = $followingUsers->map(function ($item, $key) {
-            return $item->userPosts()->get();
+        $posts = $followingUsers->map(function (User $author) {
+            $posts = $author->userPosts;
+
+            // Preserve the original per-author query for ties in its created_at sort.
+            $timestamps = $posts->countBy(fn ($post) => $post->getRawOriginal('created_at'));
+
+            return $timestamps->count() < $posts->count() ? $author->userPosts()->get() : $posts;
         })->flatten();
         return PostDetailsResource::collection($posts);
     }
