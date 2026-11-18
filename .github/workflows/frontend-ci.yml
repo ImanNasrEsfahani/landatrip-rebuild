@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   build:
-    name: React 18 / Vite 7 / Node 22
+    name: React 18 / Vite 7 / Node 22 build
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -28,9 +28,6 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Audit frontend dependencies
-        run: npm audit --audit-level=high
-
       - name: Build production client bundles
         run: npm run build
 
@@ -39,3 +36,24 @@ jobs:
 
       - name: Build Inertia SSR bundle
         run: npm run build:ssr
+
+  audit:
+    name: Full npm audit (high+)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Audit all frontend dependencies
+        run: npm audit --audit-level=high
