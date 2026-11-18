@@ -152,7 +152,8 @@ export default function Conversation() {
     }, [lists])
 
     const back = () => {
-        setChat([])
+        setChat([]);
+        setId(undefined);
     }
 
     if (conversation.isLoading) {
